@@ -40,6 +40,8 @@ namespace BrimSchedule.API
                 builder.AllowCredentials();
                 builder.AllowAnyMethod();
             }));
+
+            services.AddHealthChecks();
             
             // TODO Uncomment and fill in correspond classes when EF will be set up
             // services.AddDbContext<T>(opt => opt.UseSqlServer(Configuration.GetConnectionString(("Default")), 
@@ -131,10 +133,11 @@ namespace BrimSchedule.API
                     // TODO Figure out is it necessary
                     //options.OperationFilter<SwaggerDefaultValues>();
             
-                    options.IncludeXmlComments(Path.Combine(
-                        Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                        $"{GetType().Assembly.GetName().Name}.xml"
-                    ));
+                    // TODO Uncomment if building xml representation of summaries will be added
+                    // options.IncludeXmlComments(Path.Combine(
+                    //     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
+                    //     $"{GetType().Assembly.GetName().Name}.xml"
+                    // ));
             
                     options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
                     {
@@ -169,10 +172,11 @@ namespace BrimSchedule.API
 
             app.UseCors("CorsPolicy");
             
-            FirebaseApp.Create(new AppOptions()
-            {
-                Credential = GoogleCredential.GetApplicationDefault()
-            });
+            // TODO Uncomment when Firebase app will be configured
+            // FirebaseApp.Create(new AppOptions()
+            // {
+            //     Credential = GoogleCredential.GetApplicationDefault()
+            // });
             
             app.UseHttpsRedirection();
             
