@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using BrimSchedule.API.SwaggerConfiguration;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
@@ -16,30 +17,42 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 namespace BrimSchedule.API
 {
     public class Startup
     {
+        private const string Bearer = "Bearer";
+        
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
 
-        public IConfiguration Configuration { get; }
-        
+        private IConfiguration Configuration { get; }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
-            services.AddCors(b => b.AddPolicy("CorsPolicy", builder =>
+            services.AddCors(b =>
             {
-                builder.SetIsOriginAllowed(s => true);
-                builder.AllowAnyHeader();
-                builder.AllowCredentials();
-                builder.AllowAnyMethod();
-            }));
+                b.AddPolicy("DevCorsPolicy", builder =>
+                {
+                    builder.SetIsOriginAllowed(_ => true);
+                    builder.AllowAnyHeader();
+                    builder.AllowCredentials();
+                    builder.AllowAnyMethod();
+                });
+                
+                b.AddDefaultPolicy(_ =>
+                {
+                    
+                });
+            });
 
             services.AddHealthChecks();
             
@@ -68,9 +81,9 @@ namespace BrimSchedule.API
                             return;
                         }
 
-                        if (!authorization.StartsWith("Bearer ", StringComparison.OrdinalIgnoreCase)) return;
+                        if (!authorization.StartsWith(Bearer, StringComparison.OrdinalIgnoreCase)) return;
                         
-                        var token = authorization.Substring("Bearer ".Length).Trim();
+                        var token = authorization.Substring(Bearer.Length).Trim();
 
                         if (string.IsNullOrEmpty(token))
                         {
@@ -112,37 +125,23 @@ namespace BrimSchedule.API
                     options.SubstituteApiVersionInUrl = true;
                 });
             
-            
+            services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
             services.AddSwaggerGen(
                 options =>
                 {
-                    var provider = services.BuildServiceProvider().GetRequiredService<IApiVersionDescriptionProvider>();
-            
-                    foreach (var description in provider.ApiVersionDescriptions)
-                    {
-                        options.SwaggerDoc(description.GroupName, new OpenApiInfo()
-                        {
-                            Title =
-                                $"{GetType().Assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product}",
-                            Version = description.ApiVersion.ToString(),
-                            Description = description.IsDeprecated ? "DEPRECATED" : ""
-            
-                        });
-                    }
-            
-                    // TODO Figure out is it necessary
-                    //options.OperationFilter<SwaggerDefaultValues>();
-            
-                    // TODO Uncomment if building xml representation of summaries will be added
-                    // options.IncludeXmlComments(Path.Combine(
-                    //     Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location),
-                    //     $"{GetType().Assembly.GetName().Name}.xml"
-                    // ));
-            
-                    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme()
+                    // necessary for correct UI of different api versions
+                    // add a custom operation filter which sets default values
+                    options.OperationFilter<SwaggerDefaultValues>();
+                    
+                    options.IncludeXmlComments(Path.Combine(
+                        Path.GetDirectoryName(Assembly.GetEntryAssembly().Location),
+                        $"{GetType().Assembly.GetName().Name}.xml"
+                    ));
+
+                    options.AddSecurityDefinition(Bearer, new OpenApiSecurityScheme()
                     {
                         In = ParameterLocation.Header,
-                        Description = "Введите в поле JWT токен с припиской Bearer",
+                        Description = $"Введите в поле JWT токен с припиской {Bearer}",
                         Name = "Authorization",
                         Type = SecuritySchemeType.ApiKey
                     });
@@ -152,7 +151,7 @@ namespace BrimSchedule.API
                         {
                             new OpenApiSecurityScheme()
                             {
-                                Name = "Bearer"
+                                Name = Bearer
                             },
                             new List<string>()
                         }
@@ -170,8 +169,27 @@ namespace BrimSchedule.API
                 
             app.UseRouting();
 
-            app.UseCors("CorsPolicy");
+            if (env.IsDevelopment())
+            {
+                app.UseCors("DevCorsPolicy");
+                
+                app.UseSwagger();
+                app.UseSwaggerUI(
+                    options =>
+                    {
+                        foreach (var description in provider.ApiVersionDescriptions)
+                        {
+                            var alias = string.IsNullOrWhiteSpace(Configuration["Swagger:Alias"]) ? "" : $"/{Configuration["Swagger:Alias"]}";
             
+                            options.SwaggerEndpoint($"{alias}/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
+                        }
+                    });
+            }
+            else
+            {
+                app.UseCors();
+            }
+
             // TODO Uncomment when Firebase app will be configured
             // FirebaseApp.Create(new AppOptions()
             // {
@@ -179,19 +197,6 @@ namespace BrimSchedule.API
             // });
             
             app.UseHttpsRedirection();
-            
-            app.UseSwagger();
-            
-            app.UseSwaggerUI(
-                options =>
-                {
-                    foreach (var description in provider.ApiVersionDescriptions)
-                    {
-                        var alias = string.IsNullOrWhiteSpace(Configuration["Swagger:Alias"]) ? "" : $"/{Configuration["Swagger:Alias"]}";
-            
-                        options.SwaggerEndpoint($"{alias}/swagger/{description.GroupName}/swagger.json", description.GroupName.ToUpperInvariant());
-                    }
-                });
 
             app.UseAuthentication();
             app.UseAuthorization();
