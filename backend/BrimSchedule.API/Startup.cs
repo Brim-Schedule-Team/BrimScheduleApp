@@ -158,6 +158,10 @@ namespace BrimSchedule.API
                     });
             
                 });
+
+            services.AddControllersWithViews();
+            services.AddRazorPages();
+            services.AddHttpContextAccessor();
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
@@ -206,6 +210,7 @@ namespace BrimSchedule.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
                 endpoints.MapHealthChecks("/health");
             });
         }
