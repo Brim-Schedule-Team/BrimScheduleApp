@@ -190,11 +190,13 @@ namespace BrimSchedule.API
                 app.UseCors();
             }
 
-            // TODO Uncomment when Firebase app will be configured
-            // FirebaseApp.Create(new AppOptions()
-            // {
-            //     Credential = GoogleCredential.GetApplicationDefault()
-            // });
+            var firebaseConfigFilePath =
+                $"./brimschedule-firebase-admin-sdk{(env.IsDevelopment() ? "-test" : string.Empty)}.json";
+            
+            FirebaseApp.Create(new AppOptions()
+            {
+                Credential = GoogleCredential.FromFile(firebaseConfigFilePath)
+            });
             
             app.UseHttpsRedirection();
 
