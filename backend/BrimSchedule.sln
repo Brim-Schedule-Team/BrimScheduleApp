@@ -1,0 +1,46 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrimSchedule.API", "BrimSchedule.API\BrimSchedule.API.csproj", "{1EB9615F-ABA2-4348-86FA-E5133205E380}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrimSchedule.Domain", "BrimSchedule.Domain\BrimSchedule.Domain.csproj", "{C32F3CAF-775F-4403-B459-E7828734620B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrimSchedule.Application", "BrimSchedule.Application\BrimSchedule.Application.csproj", "{D4362BD7-46FC-4810-9E64-133FC155744A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrimSchedule.Infrastructure", "BrimSchedule.Infrastructure\BrimSchedule.Infrastructure.csproj", "{E03063EA-201C-4C8A-8091-2FCD8DE769F1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrimSchedule.Persistence", "BrimSchedule.Persistence\BrimSchedule.Persistence.csproj", "{972C88A4-31ED-4542-8BDE-0A370CB77257}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BrimSchedule.Tests", "BrimSchedule.Tests\BrimSchedule.Tests.csproj", "{BF063D71-5B8A-49E5-A85B-8021741798E1}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{1EB9615F-ABA2-4348-86FA-E5133205E380}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1EB9615F-ABA2-4348-86FA-E5133205E380}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1EB9615F-ABA2-4348-86FA-E5133205E380}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1EB9615F-ABA2-4348-86FA-E5133205E380}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C32F3CAF-775F-4403-B459-E7828734620B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C32F3CAF-775F-4403-B459-E7828734620B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C32F3CAF-775F-4403-B459-E7828734620B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C32F3CAF-775F-4403-B459-E7828734620B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D4362BD7-46FC-4810-9E64-133FC155744A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D4362BD7-46FC-4810-9E64-133FC155744A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D4362BD7-46FC-4810-9E64-133FC155744A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D4362BD7-46FC-4810-9E64-133FC155744A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E03063EA-201C-4C8A-8091-2FCD8DE769F1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E03063EA-201C-4C8A-8091-2FCD8DE769F1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E03063EA-201C-4C8A-8091-2FCD8DE769F1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E03063EA-201C-4C8A-8091-2FCD8DE769F1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{972C88A4-31ED-4542-8BDE-0A370CB77257}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{972C88A4-31ED-4542-8BDE-0A370CB77257}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{972C88A4-31ED-4542-8BDE-0A370CB77257}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{972C88A4-31ED-4542-8BDE-0A370CB77257}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BF063D71-5B8A-49E5-A85B-8021741798E1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BF063D71-5B8A-49E5-A85B-8021741798E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BF063D71-5B8A-49E5-A85B-8021741798E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BF063D71-5B8A-49E5-A85B-8021741798E1}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
