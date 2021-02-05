@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BrimSchedule.Domain.Interfaces
+namespace BrimSchedule.Persistence.Interfaces
 {
 	public interface IRepository<T>
 		where T: class

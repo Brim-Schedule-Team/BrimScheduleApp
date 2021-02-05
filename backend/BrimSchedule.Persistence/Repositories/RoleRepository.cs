@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using BrimSchedule.Domain.EF;
 using BrimSchedule.Domain.Entities;
-using BrimSchedule.Domain.Interfaces;
+using BrimSchedule.Persistence.EF;
+using BrimSchedule.Persistence.Interfaces;
 
-namespace BrimSchedule.Domain.Repositories
+namespace BrimSchedule.Persistence.Repositories
 {
 	public class RoleRepository: IRepository<Role>
 	{

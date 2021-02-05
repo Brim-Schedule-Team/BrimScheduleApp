@@ -1,7 +1,7 @@
 ﻿using System.Data.Entity;
 using BrimSchedule.Domain.Entities;
 
-namespace BrimSchedule.Domain.EF
+namespace BrimSchedule.Persistence.EF
 {
 	public class BrimScheduleContext: DbContext
 	{

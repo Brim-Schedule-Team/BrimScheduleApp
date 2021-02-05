@@ -1,7 +1,7 @@
 ﻿using System;
 using BrimSchedule.Domain.Entities;
 
-namespace BrimSchedule.Domain.Interfaces
+namespace BrimSchedule.Persistence.Interfaces
 {
 	public interface IUnitOfWork: IDisposable
 	{
