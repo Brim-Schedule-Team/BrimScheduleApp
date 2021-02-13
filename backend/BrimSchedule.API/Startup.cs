@@ -185,6 +185,7 @@ namespace BrimSchedule.API
 			else
 			{
 				app.UseCors();
+				app.UseHttpsRedirection();
 			}
 
 			var firebaseConfigFilePath =
@@ -194,8 +195,6 @@ namespace BrimSchedule.API
 			{
 				Credential = GoogleCredential.FromFile(firebaseConfigFilePath)
 			});
-
-			app.UseHttpsRedirection();
 
 			app.UseAuthentication();
 			app.UseAuthorization();
