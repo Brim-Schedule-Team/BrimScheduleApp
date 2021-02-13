@@ -1,10 +1,12 @@
-﻿using System.Data.Entity;
-using BrimSchedule.Domain.Entities;
+﻿using BrimSchedule.Domain.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace BrimSchedule.Persistence.EF
 {
 	public class BrimScheduleContext: DbContext
 	{
+		private readonly string _connectionString;
+
 		public DbSet<User> Users { get; set; }
 		public DbSet<Profile> Profiles { get; set; }
 		public DbSet<Role> Roles { get; set; }
@@ -13,44 +15,56 @@ namespace BrimSchedule.Persistence.EF
 		public DbSet<Audit> Audit { get; set; }
 		public DbSet<UserSuggestionList> UserSuggestionLists { get; set; }
 
-		static BrimScheduleContext()
+		public BrimScheduleContext(string connectionString)
 		{
-			Database.SetInitializer(new StoreDbInitializer());
+			_connectionString = connectionString;
+			Database.EnsureCreated();
 		}
 
-		public BrimScheduleContext(string connectionString): base(connectionString)
-		{
-		}
-
-		protected override void OnModelCreating(DbModelBuilder modelBuilder)
+		#pragma warning disable CA1062
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<User>()
-				.HasRequired(u => u.Profile)
-				.WithRequiredPrincipal(p => p.User);
+				.Property(u => u.Profile)
+				.IsRequired();
 
 			modelBuilder.Entity<User>()
 				.HasIndex(u => u.Login)
-				.IsUnique(true);
+				.IsUnique();
 
 			modelBuilder.Entity<Role>()
-				.HasRequired(r => r.Name);
+				.Property(r => r.Name)
+				.IsRequired();
 
 			modelBuilder.Entity<Role>()
 				.HasIndex(r => r.Name)
-				.IsUnique(true);
+				.IsUnique();
 
 			modelBuilder.Entity<Class>()
-				.HasRequired(c => c.Name);
+				.Property(c => c.Name)
+				.IsRequired();
 
 			modelBuilder.Entity<Audit>()
-				.HasRequired(a => a.Action);
+				.Property(a => a.Action)
+				.IsRequired();
 
 			modelBuilder.Entity<UserSuggestionList>()
-				.HasRequired(u => u.UsersJson);
+				.Property(u => u.UsersJson)
+				.IsRequired();
 
 			modelBuilder.Entity<UserSuggestionList>()
 				.HasIndex(u => u.Name)
-				.IsUnique(true);
+				.IsUnique();
+
+			modelBuilder.Entity<Role>().HasData(
+				new Role { Id = 1, Name = "User" },
+				new Role { Id = 2, Name = "Admin" }
+			);
+		}
+
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		{
+			optionsBuilder.UseNpgsql(_connectionString);
 		}
 	}
 }

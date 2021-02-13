@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using BrimSchedule.Domain.Entities;
 using BrimSchedule.Persistence.EF;
 using BrimSchedule.Persistence.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace BrimSchedule.Persistence.Repositories
 {
