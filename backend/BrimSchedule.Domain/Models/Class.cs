@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using BrimSchedule.Domain.Entities.Enum;
+using BrimSchedule.Domain.Models.Enum;
 
-namespace BrimSchedule.Domain.Entities
+namespace BrimSchedule.Domain.Models
 {
 	public class Class
 	{

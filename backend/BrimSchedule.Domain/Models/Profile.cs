@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace BrimSchedule.Domain.Entities
+namespace BrimSchedule.Domain.Models
 {
 	public class Profile
 	{

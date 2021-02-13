@@ -1,5 +1,5 @@
 ﻿using System;
-using BrimSchedule.Domain.Entities;
+using BrimSchedule.Domain.Models;
 
 namespace BrimSchedule.Persistence.Interfaces
 {

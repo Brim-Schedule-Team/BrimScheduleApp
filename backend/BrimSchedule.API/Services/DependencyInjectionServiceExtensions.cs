@@ -1,5 +1,4 @@
-﻿using BrimSchedule.API.Settings;
-using BrimSchedule.Persistence.EF;
+﻿using BrimSchedule.Persistence.EF;
 using BrimSchedule.Persistence.Interfaces;
 using BrimSchedule.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -31,8 +30,11 @@ namespace BrimSchedule.API.Services
 		/// <param name="configuration"></param>
 		private static void InjectCommonServices(IServiceCollection services, IConfiguration configuration)
 		{
-			services.AddScoped<IUnitOfWork>(_ => new EFUnitOfWork(
-				configuration.GetConnectionString(ConnectionStringNames.BrimScheduleContext)));
+			var connectionString = configuration.GetConnectionString(nameof(BrimScheduleContext));
+			// EFUnitOfWork is the main DB class to work with in the Business layer
+			services.AddScoped<IUnitOfWork>(_ => new EFUnitOfWork(connectionString));
+			// Register BrimScheduleContext for auto migrations
+			services.AddDbContext<BrimScheduleContext>(opts => opts.UseNpgsql(connectionString));
 		}
 
 		/// <summary>

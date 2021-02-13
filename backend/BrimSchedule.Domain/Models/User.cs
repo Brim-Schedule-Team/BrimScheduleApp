@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace BrimSchedule.Domain.Entities
+namespace BrimSchedule.Domain.Models
 {
 	public class User
 	{

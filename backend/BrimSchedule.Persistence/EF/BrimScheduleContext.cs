@@ -1,4 +1,4 @@
-﻿using BrimSchedule.Domain.Entities;
+﻿using BrimSchedule.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BrimSchedule.Persistence.EF
@@ -15,18 +15,30 @@ namespace BrimSchedule.Persistence.EF
 		public DbSet<Audit> Audit { get; set; }
 		public DbSet<UserSuggestionList> UserSuggestionLists { get; set; }
 
+		// For creating migrations
+		// (from Persistence folder): dotnet ef migrations add <migration_name>
+		public BrimScheduleContext()
+		{
+		}
+
+		// For applying migrations: automatically or by running a command
+		// (from BrimSchedule.API folder): dotnet ef database update
+		public BrimScheduleContext(DbContextOptions<BrimScheduleContext> options): base(options)
+		{
+		}
+
 		public BrimScheduleContext(string connectionString)
 		{
 			_connectionString = connectionString;
-			Database.EnsureCreated();
 		}
 
-		#pragma warning disable CA1062
+#pragma warning disable CA1062
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
 			modelBuilder.Entity<User>()
-				.Property(u => u.Profile)
-				.IsRequired();
+				.HasOne(u => u.Profile)
+				.WithOne(p => p.User)
+				.HasForeignKey<Profile>(p => p.UserId);
 
 			modelBuilder.Entity<User>()
 				.HasIndex(u => u.Login)
@@ -64,7 +76,14 @@ namespace BrimSchedule.Persistence.EF
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			optionsBuilder.UseNpgsql(_connectionString);
+			if (_connectionString != null)
+			{
+				optionsBuilder.UseNpgsql(_connectionString);
+			}
+			else
+			{
+				optionsBuilder.UseNpgsql();
+			}
 		}
 	}
 }

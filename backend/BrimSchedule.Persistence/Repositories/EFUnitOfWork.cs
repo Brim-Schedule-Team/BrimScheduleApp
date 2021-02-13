@@ -1,7 +1,8 @@
 ﻿using System;
-using BrimSchedule.Domain.Entities;
+using BrimSchedule.Domain.Models;
 using BrimSchedule.Persistence.EF;
 using BrimSchedule.Persistence.Interfaces;
+using Microsoft.Extensions.Configuration;
 
 namespace BrimSchedule.Persistence.Repositories
 {

@@ -13,6 +13,7 @@ namespace BrimSchedule.API
 
 		public static IHostBuilder CreateHostBuilder(string[] args) =>
 			Host.CreateDefaultBuilder(args)
+				.UseDefaultServiceProvider(options => options.ValidateScopes = false) // for EF core
 				.ConfigureWebHostDefaults(webBuilder => { webBuilder.UseStartup<Startup>(); });
 	}
 }

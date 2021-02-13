@@ -1,4 +1,4 @@
-﻿namespace BrimSchedule.Domain.Entities.Enum
+﻿namespace BrimSchedule.Domain.Models.Enum
 {
 	public enum ClassStatus
 	{

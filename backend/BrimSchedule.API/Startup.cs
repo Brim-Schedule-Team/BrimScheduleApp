@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -7,6 +8,8 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.SwaggerConfiguration;
+using BrimSchedule.Persistence.EF;
+using BrimSchedule.Persistence.Interfaces;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
@@ -15,6 +18,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -204,6 +208,10 @@ namespace BrimSchedule.API
 				endpoints.MapControllers();
 				endpoints.MapHealthChecks("/health");
 			});
+
+			// Execute DB migrations for Entity Framework
+			using var dbContext = app.ApplicationServices.GetService<BrimScheduleContext>();
+			dbContext.Database.Migrate();
 		}
 	}
 }
