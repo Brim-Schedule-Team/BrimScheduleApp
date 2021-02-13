@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -9,7 +8,6 @@ using System.Threading.Tasks;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.SwaggerConfiguration;
 using BrimSchedule.Persistence.EF;
-using BrimSchedule.Persistence.Interfaces;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
