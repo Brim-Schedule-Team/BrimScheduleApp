@@ -82,6 +82,7 @@ namespace BrimSchedule.Persistence.EF
 			}
 			else
 			{
+				// For creating migrations
 				optionsBuilder.UseNpgsql();
 			}
 		}
