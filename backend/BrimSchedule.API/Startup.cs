@@ -90,7 +90,7 @@ namespace BrimSchedule.API
 							return;
 						}
 
-						var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token).ConfigureAwait(true);
+						var decodedToken = await FirebaseAuth.DefaultInstance.VerifyIdTokenAsync(token).ConfigureAwait(false);
 
 						context.Principal = new ClaimsPrincipal(
 							new ClaimsIdentity(
