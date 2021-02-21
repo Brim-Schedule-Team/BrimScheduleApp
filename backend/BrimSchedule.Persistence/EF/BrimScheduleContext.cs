@@ -1,16 +1,16 @@
-﻿using BrimSchedule.Domain.Models;
+﻿using BrimSchedule.Domain.Constants;
+using BrimSchedule.Domain.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace BrimSchedule.Persistence.EF
 {
-	public class BrimScheduleContext: DbContext
+	public class BrimScheduleContext: IdentityDbContext<User, Role, int>
 	{
 		private readonly string _connectionString;
 
-		public DbSet<User> Users { get; set; }
 		public DbSet<Profile> Profiles { get; set; }
-		public DbSet<Role> Roles { get; set; }
-		public DbSet<Class> Classes { get; set; }
+		public DbSet<Lesson> Lessons { get; set; }
 		public DbSet<Attendance> Attendance { get; set; }
 		public DbSet<Audit> Audit { get; set; }
 		public DbSet<UserSuggestionList> UserSuggestionLists { get; set; }
@@ -32,10 +32,12 @@ namespace BrimSchedule.Persistence.EF
 			_connectionString = connectionString;
 		}
 
-#pragma warning disable CA1062
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
+			base.OnModelCreating(modelBuilder);
+
 			modelBuilder.Entity<User>()
+				.ToTable("Users")
 				.HasOne(u => u.Profile)
 				.WithOne(p => p.User)
 				.HasForeignKey<Profile>(p => p.UserId);
@@ -45,6 +47,7 @@ namespace BrimSchedule.Persistence.EF
 				.IsUnique();
 
 			modelBuilder.Entity<Role>()
+				.ToTable("Roles")
 				.Property(r => r.Name)
 				.IsRequired();
 
@@ -52,7 +55,7 @@ namespace BrimSchedule.Persistence.EF
 				.HasIndex(r => r.Name)
 				.IsUnique();
 
-			modelBuilder.Entity<Class>()
+			modelBuilder.Entity<Lesson>()
 				.Property(c => c.Name)
 				.IsRequired();
 
@@ -69,8 +72,8 @@ namespace BrimSchedule.Persistence.EF
 				.IsUnique();
 
 			modelBuilder.Entity<Role>().HasData(
-				new Role { Id = 1, Name = "User" },
-				new Role { Id = 2, Name = "Admin" }
+				new Role { Id = 1, Name = RoleNames.User },
+				new Role { Id = 2, Name = RoleNames.Admin }
 			);
 		}
 

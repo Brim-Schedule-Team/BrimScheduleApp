@@ -8,7 +8,7 @@ namespace BrimSchedule.Persistence.Interfaces
 		IRepository<User> Users { get; }
 		IRepository<Profile> Profiles { get; }
 		IRepository<Role> Roles { get; }
-		IRepository<Class> Classes { get; }
+		IRepository<Lesson> Lessons { get; }
 		IRepository<Attendance> Attendance { get; }
 		IRepository<Audit> Audit { get; }
 		IRepository<UserSuggestionList> UserSuggestionLists { get; }

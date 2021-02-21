@@ -2,7 +2,6 @@
 using BrimSchedule.Domain.Models;
 using BrimSchedule.Persistence.EF;
 using BrimSchedule.Persistence.Interfaces;
-using Microsoft.Extensions.Configuration;
 
 namespace BrimSchedule.Persistence.Repositories
 {
@@ -13,20 +12,20 @@ namespace BrimSchedule.Persistence.Repositories
 		private UserRepository _userRepository;
 		private ProfileRepository _profileRepository;
 		private RoleRepository _roleRepository;
-		private ClassRepository _classRepository;
+		private LessonRepository _lessonRepository;
 		private AttendanceRepository _attendanceRepository;
 		private AuditRepository _auditRepository;
 		private UserSuggestionListRepository _userSuggestionListRepository;
 
-		public EFUnitOfWork(string connectionString)
+		public EFUnitOfWork(BrimScheduleContext dbContext)
 		{
-			_db = new BrimScheduleContext(connectionString);
+			_db = dbContext;
 		}
 
 		public IRepository<User> Users => _userRepository ??= new UserRepository(_db);
 		public IRepository<Profile> Profiles => _profileRepository ??= new ProfileRepository(_db);
 		public IRepository<Role> Roles => _roleRepository ??= new RoleRepository(_db);
-		public IRepository<Class> Classes => _classRepository ??= new ClassRepository(_db);
+		public IRepository<Lesson> Lessons => _lessonRepository ??= new LessonRepository(_db);
 		public IRepository<Attendance> Attendance => _attendanceRepository ??= new AttendanceRepository(_db);
 		public IRepository<Audit> Audit => _auditRepository ??= new AuditRepository(_db);
 		public IRepository<UserSuggestionList> UserSuggestionLists =>  _userSuggestionListRepository ??= new UserSuggestionListRepository(_db);

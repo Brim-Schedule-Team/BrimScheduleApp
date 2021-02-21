@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
+using Microsoft.AspNetCore.Identity;
 
 namespace BrimSchedule.Domain.Models
 {
-	public class User
+	public class User: IdentityUser<int>
 	{
-		public int Id { get; set; }
 		public string Login { get; set; }
 		public bool IsVerified { get; set; }
 		public bool IsDeleted { get; set; }

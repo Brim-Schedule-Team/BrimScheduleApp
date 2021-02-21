@@ -31,10 +31,15 @@ namespace BrimSchedule.API.Services
 		private static void InjectCommonServices(IServiceCollection services, IConfiguration configuration)
 		{
 			var connectionString = configuration.GetConnectionString(nameof(BrimScheduleContext));
-			// EFUnitOfWork is the main DB class to work with in the Business layer
-			services.AddScoped<IUnitOfWork>(_ => new EFUnitOfWork(connectionString));
-			// Register BrimScheduleContext for auto migrations
 			services.AddDbContext<BrimScheduleContext>(opts => opts.UseNpgsql(connectionString));
+
+			var serviceProvider = services.BuildServiceProvider();
+			services.AddScoped<IUnitOfWork>(_ =>
+			{
+				var scope = serviceProvider.CreateScope();
+				var context = scope.ServiceProvider.GetRequiredService<BrimScheduleContext>();
+				return new EFUnitOfWork(context);
+			});
 		}
 
 		/// <summary>

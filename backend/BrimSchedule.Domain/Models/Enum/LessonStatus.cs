@@ -1,6 +1,6 @@
 ﻿namespace BrimSchedule.Domain.Models.Enum
 {
-	public enum ClassStatus
+	public enum LessonStatus
 	{
 		Draft = 0,
 		Planned = 1,

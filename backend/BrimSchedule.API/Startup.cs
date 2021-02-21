@@ -7,6 +7,7 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.SwaggerConfiguration;
+using BrimSchedule.Domain.Models;
 using BrimSchedule.Persistence.EF;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
@@ -38,7 +39,6 @@ namespace BrimSchedule.API
 			CurrentEnvironment = env;
 		}
 
-		#pragma warning disable CA1801, CA1506
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.AddControllers();
@@ -155,8 +155,10 @@ namespace BrimSchedule.API
 							new List<string>()
 						}
 					});
-
 				});
+
+			services.AddIdentity<User, Role>()
+				.AddEntityFrameworkStores<BrimScheduleContext>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
@@ -206,10 +208,6 @@ namespace BrimSchedule.API
 				endpoints.MapControllers();
 				endpoints.MapHealthChecks("/health");
 			});
-
-			// Execute DB migrations for Entity Framework
-			using var dbContext = app.ApplicationServices.GetService<BrimScheduleContext>();
-			dbContext.Database.Migrate();
 		}
 	}
 }

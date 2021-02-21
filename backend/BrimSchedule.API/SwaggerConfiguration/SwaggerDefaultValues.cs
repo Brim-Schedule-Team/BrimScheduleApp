@@ -7,7 +7,6 @@ namespace BrimSchedule.API.SwaggerConfiguration
 {
 	public class SwaggerDefaultValues : IOperationFilter
 	{
-		#pragma warning disable CA1062
 		/// <summary>
 		/// Applies the filter to the specified operation using the given context.
 		/// </summary>
