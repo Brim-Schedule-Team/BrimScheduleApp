@@ -4,6 +4,7 @@ using BrimSchedule.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace BrimSchedule.API.Services
 {
@@ -32,14 +33,8 @@ namespace BrimSchedule.API.Services
 		{
 			var connectionString = configuration.GetConnectionString(nameof(BrimScheduleContext));
 			services.AddDbContext<BrimScheduleContext>(opts => opts.UseNpgsql(connectionString));
-
-			var serviceProvider = services.BuildServiceProvider();
-			services.AddScoped<IUnitOfWork>(_ =>
-			{
-				var scope = serviceProvider.CreateScope();
-				var context = scope.ServiceProvider.GetRequiredService<BrimScheduleContext>();
-				return new EFUnitOfWork(context);
-			});
+			services.AddScoped<IUnitOfWork, EFUnitOfWork>(provider =>
+				new EFUnitOfWork(provider.GetService<BrimScheduleContext>()));
 		}
 
 		/// <summary>

@@ -1,16 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Linq.Expressions;
 
 namespace BrimSchedule.Persistence.Interfaces
 {
-	public interface IRepository<T>
-		where T: class
+	public interface IRepository<TEntity>
+		where TEntity: class
 	{
-		IEnumerable<T> GetAll();
-		T Get(int id);
-		IEnumerable<T> Find(Func<T, Boolean> predicate);
-		void Create(T item);
-		void Update(T item);
-		void Delete(int id);
+		IEnumerable<TEntity> Get(
+			Expression<Func<TEntity, bool>> filter = null,
+			Func<IQueryable<TEntity>, IOrderedQueryable<TEntity>> orderBy = null,
+			params string[] includeProperties);
+
+		TEntity GetById(object id);
+		void Insert(TEntity entity);
+		void Delete(object id);
+		void Delete(TEntity entityToDelete);
+		void Update(TEntity entityToUpdate);
 	}
 }

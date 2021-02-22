@@ -276,8 +276,8 @@ namespace BrimSchedule.Persistence.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { 1, "db524db4-a3e4-4986-a6e3-689549b9faf0", "User", null },
-                    { 2, "d87b15e6-17c4-4027-ad15-d27f14070400", "Admin", null }
+                    { 1, "91ef1ab9-4b6d-4816-96dd-1170ab2cfffb", "User", null },
+                    { 2, "df9f3ec4-0a58-45be-a341-7699376fcb51", "Admin", null }
                 });
 
             migrationBuilder.CreateIndex(

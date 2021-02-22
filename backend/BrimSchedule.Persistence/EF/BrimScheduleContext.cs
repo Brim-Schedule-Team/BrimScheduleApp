@@ -7,7 +7,7 @@ namespace BrimSchedule.Persistence.EF
 {
 	public class BrimScheduleContext: IdentityDbContext<User, Role, int>
 	{
-		private readonly string _connectionString;
+		private readonly DbContextOptions _dbContextOptions;
 
 		public DbSet<Profile> Profiles { get; set; }
 		public DbSet<Lesson> Lessons { get; set; }
@@ -25,11 +25,7 @@ namespace BrimSchedule.Persistence.EF
 		// (from BrimSchedule.API folder): dotnet ef database update
 		public BrimScheduleContext(DbContextOptions<BrimScheduleContext> options): base(options)
 		{
-		}
-
-		public BrimScheduleContext(string connectionString)
-		{
-			_connectionString = connectionString;
+			_dbContextOptions = options;
 		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -79,11 +75,7 @@ namespace BrimSchedule.Persistence.EF
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
-			if (_connectionString != null)
-			{
-				optionsBuilder.UseNpgsql(_connectionString);
-			}
-			else
+			if (_dbContextOptions == null)
 			{
 				// For creating migrations
 				optionsBuilder.UseNpgsql();

@@ -186,13 +186,13 @@ namespace BrimSchedule.Persistence.Migrations
                         new
                         {
                             Id = 1,
-                            ConcurrencyStamp = "db524db4-a3e4-4986-a6e3-689549b9faf0",
+                            ConcurrencyStamp = "91ef1ab9-4b6d-4816-96dd-1170ab2cfffb",
                             Name = "User"
                         },
                         new
                         {
                             Id = 2,
-                            ConcurrencyStamp = "d87b15e6-17c4-4027-ad15-d27f14070400",
+                            ConcurrencyStamp = "df9f3ec4-0a58-45be-a341-7699376fcb51",
                             Name = "Admin"
                         });
                 });
