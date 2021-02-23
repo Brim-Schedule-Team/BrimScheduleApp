@@ -29,10 +29,27 @@ https://www.pgadmin.org/download/pgadmin-4-windows/
 
 ### Миграции
 
-Для управления миграциями из командной строки, необходимо установить тулзу командой
+Для управления миграциями из командной строки, необходимо установить EF CLI tools следующей командой:
 
 dotnet tool install --global dotnet-ef
 
-Миграции в проекте настроены автоматически. Чтобы создать новую миграцию, необходимо перейти в каталог Persistence и выполнить команду
+Далее в комадной строке переходим в каталог BrimSchedule.Persistence, откуда будет осуществляться все последующее управление миграциями.
 
-dotnet ef migrations add <название_миграции>
+Миграции в проекте настроены автоматически. Чтобы создать новую миграцию, необходимо выполнить команду:
+
+dotnet ef --startup-project ../BrimSchedule.API/ migrations add <название_миграции>
+
+Все миграции существуют в виде С#-классов в каталоге BrimSchedule.Persistence/Migrations. Помимо миграций, в каталоге существует Snapshot-класс текущей базы.
+
+Чтобы посмотреть SQL скрипт, который будет сгенерирован миграциями, можно воспользоваться командой:
+
+dotnet ef --startup-project ../BrimSchedule.API/ migrations script
+
+Для удаления миграций можно выполнить команду:
+
+dotnet ef --startup-project ../BrimSchedule.API/ migrations remove
+
+Если миграции не накатываются, то с помощью следующих команд можно пересоздать БД. Для этого необходимо перейти в каталог BrimSchedule.API в терминале:
+
+dotnet ef --startup-project ../BrimSchedule.API/ database drop
+dotnet ef --startup-project ../BrimSchedule.API/ database update
