@@ -33,22 +33,12 @@ namespace BrimSchedule.Persistence.EF
 			base.OnModelCreating(modelBuilder);
 
 			modelBuilder.Entity<User>()
-				.ToTable("Users")
 				.HasOne(u => u.Profile)
 				.WithOne(p => p.User)
 				.HasForeignKey<Profile>(p => p.UserId);
 
 			modelBuilder.Entity<User>()
 				.HasIndex(u => u.Login)
-				.IsUnique();
-
-			modelBuilder.Entity<Role>()
-				.ToTable("Roles")
-				.Property(r => r.Name)
-				.IsRequired();
-
-			modelBuilder.Entity<Role>()
-				.HasIndex(r => r.Name)
 				.IsUnique();
 
 			modelBuilder.Entity<Lesson>()

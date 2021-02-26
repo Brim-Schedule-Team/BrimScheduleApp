@@ -8,13 +8,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace BrimSchedule.Persistence.Repositories
 {
-	public class GenericRepository<TEntity>: IRepository<TEntity>
+	public class Repository<TEntity>: IRepository<TEntity>
 		where TEntity : class
 	{
 		private readonly BrimScheduleContext _context;
 		private readonly DbSet<TEntity> _dbSet;
 
-		public GenericRepository(BrimScheduleContext context)
+		public Repository(BrimScheduleContext context)
 		{
 			_context = context ?? throw new ArgumentNullException(nameof(context));
 			_dbSet = context.Set<TEntity>();

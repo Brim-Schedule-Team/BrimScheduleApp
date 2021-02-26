@@ -9,26 +9,26 @@ namespace BrimSchedule.Persistence.Repositories
 	{
 		private bool _disposed;
 		private readonly BrimScheduleContext _db;
-		private GenericRepository<User> _userRepository;
-		private GenericRepository<Profile> _profileRepository;
-		private GenericRepository<Role> _roleRepository;
-		private GenericRepository<Lesson> _lessonRepository;
-		private GenericRepository<Attendance> _attendanceRepository;
-		private GenericRepository<Audit> _auditRepository;
-		private GenericRepository<UserSuggestionList> _userSuggestionListRepository;
+		private Repository<User> _userRepository;
+		private Repository<Profile> _profileRepository;
+		private Repository<Role> _roleRepository;
+		private Repository<Lesson> _lessonRepository;
+		private Repository<Attendance> _attendanceRepository;
+		private Repository<Audit> _auditRepository;
+		private Repository<UserSuggestionList> _userSuggestionListRepository;
 
 		public EFUnitOfWork(BrimScheduleContext dbContext)
 		{
 			_db = dbContext;
 		}
 
-		public IRepository<User> Users => _userRepository ??= new GenericRepository<User>(_db);
-		public IRepository<Profile> Profiles => _profileRepository ??= new GenericRepository<Profile>(_db);
-		public IRepository<Role> Roles => _roleRepository ??= new GenericRepository<Role>(_db);
-		public IRepository<Lesson> Lessons => _lessonRepository ??= new GenericRepository<Lesson>(_db);
-		public IRepository<Attendance> Attendance => _attendanceRepository ??= new GenericRepository<Attendance>(_db);
-		public IRepository<Audit> Audit => _auditRepository ??= new GenericRepository<Audit>(_db);
-		public IRepository<UserSuggestionList> UserSuggestionLists =>  _userSuggestionListRepository ??= new GenericRepository<UserSuggestionList>(_db);
+		public IRepository<User> Users => _userRepository ??= new Repository<User>(_db);
+		public IRepository<Profile> Profiles => _profileRepository ??= new Repository<Profile>(_db);
+		public IRepository<Role> Roles => _roleRepository ??= new Repository<Role>(_db);
+		public IRepository<Lesson> Lessons => _lessonRepository ??= new Repository<Lesson>(_db);
+		public IRepository<Attendance> Attendance => _attendanceRepository ??= new Repository<Attendance>(_db);
+		public IRepository<Audit> Audit => _auditRepository ??= new Repository<Audit>(_db);
+		public IRepository<UserSuggestionList> UserSuggestionLists =>  _userSuggestionListRepository ??= new Repository<UserSuggestionList>(_db);
 
 		public void Save()
 		{
