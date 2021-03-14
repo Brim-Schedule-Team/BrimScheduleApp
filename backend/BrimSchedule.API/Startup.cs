@@ -7,17 +7,15 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.SwaggerConfiguration;
-using BrimSchedule.Domain.Models;
-using BrimSchedule.Persistence.EF;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -109,6 +107,13 @@ namespace BrimSchedule.API
 				};
 			});
 
+			services.AddAuthorization(options =>
+			{
+				options.FallbackPolicy = new AuthorizationPolicyBuilder()
+					.RequireAuthenticatedUser()
+					.Build();
+			});
+
 			services.AddApiVersioning(options =>
 			{
 				options.ReportApiVersions = true;
@@ -156,9 +161,6 @@ namespace BrimSchedule.API
 						}
 					});
 				});
-
-			services.AddIdentity<User, Role>()
-				.AddEntityFrameworkStores<BrimScheduleContext>();
 
 			services.AddControllersWithViews();
 			services.AddRazorPages();
