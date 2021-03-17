@@ -1,3 +1,5 @@
+using System;
+using BrimSchedule.Application.Logging;
 using BrimSchedule.Persistence.EF;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -12,9 +14,17 @@ namespace BrimSchedule.API
 		{
 			var host = CreateHostBuilder(args).Build();
 
+			InitializeLoggingSystem(host);
 			ExecuteDatabaseMigrations(host);
 
 			host.Run();
+		}
+
+		private static void InitializeLoggingSystem(IHost host)
+		{
+			using var scope = host.Services.CreateScope();
+			var logger = scope.ServiceProvider.GetRequiredService<ILoggingManager>();
+			logger.Info("Application started");
 		}
 
 		private static IHostBuilder CreateHostBuilder(string[] args) =>

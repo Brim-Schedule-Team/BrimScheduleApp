@@ -1,4 +1,5 @@
-﻿using BrimSchedule.Persistence.EF;
+﻿using BrimSchedule.Application.Logging;
+using BrimSchedule.Persistence.EF;
 using BrimSchedule.Persistence.Interfaces;
 using BrimSchedule.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -30,10 +31,14 @@ namespace BrimSchedule.API.Services
 		/// <param name="configuration"></param>
 		private static void InjectCommonServices(IServiceCollection services, IConfiguration configuration)
 		{
+			// Inject DB context and repositories
 			var connectionString = configuration.GetConnectionString(nameof(BrimScheduleContext));
 			services.AddDbContext<BrimScheduleContext>(opts => opts.UseNpgsql(connectionString));
 			services.AddScoped<IUnitOfWork, EFUnitOfWork>(provider =>
 				new EFUnitOfWork(provider.GetService<BrimScheduleContext>()));
+
+			// Inject logger singleton
+			services.AddSingleton<ILoggingManager, LoggingManager>();
 		}
 
 		/// <summary>

@@ -4,20 +4,25 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Security.Claims;
+using System.Text.Json;
 using System.Threading.Tasks;
+using BrimSchedule.API.Models;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.SwaggerConfiguration;
+using BrimSchedule.Application.Logging;
 using BrimSchedule.Domain.Models;
+using BrimSchedule.Domain.Request;
 using BrimSchedule.Persistence.EF;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.ApiExplorer;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -41,7 +46,9 @@ namespace BrimSchedule.API
 
 		public void ConfigureServices(IServiceCollection services)
 		{
+			services.ConfigureDependencyInjection(CurrentEnvironment.IsDevelopment(), Configuration);
 			services.AddControllers();
+			services.AddHealthChecks();
 
 			services.AddCors(b =>
 			{
@@ -58,9 +65,6 @@ namespace BrimSchedule.API
 
 				});
 			});
-
-			services.AddHealthChecks();
-			services.ConfigureDependencyInjection(CurrentEnvironment.IsDevelopment(), Configuration);
 
 			services.AddAuthentication(opt =>
 			{
@@ -166,6 +170,37 @@ namespace BrimSchedule.API
 			if (env.IsDevelopment())
 			{
 				app.UseDeveloperExceptionPage();
+			}
+			else
+			{
+				app.UseExceptionHandler(errorApp =>
+				{
+					errorApp.Run(async context =>
+					{
+						context.Response.StatusCode = 500;
+						context.Response.ContentType = "application/json";
+
+						var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
+						var exception = exceptionHandlerPathFeature.Error;
+
+						const string defaultErrorMessage = "Server error occured";
+
+						var errorMessage = exception is UserFriendlyException ? exception.Message : defaultErrorMessage;
+						var errorId = Guid.NewGuid();
+						var serviceError = new ServiceError
+						{
+							ErrorId = errorId,
+							ErrorMessage = errorMessage,
+						};
+
+						var serviceErrorJson = JsonSerializer.Serialize(serviceError);
+						await context.Response.WriteAsync(serviceErrorJson);
+
+						var logger = context.RequestServices.GetService<ILoggingManager>();
+						logger?.Error(serviceErrorJson, exception);
+					});
+				});
+				app.UseHsts();
 			}
 
 			app.UseRouting();
