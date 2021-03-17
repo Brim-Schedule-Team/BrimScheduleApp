@@ -55,7 +55,7 @@ namespace BrimSchedule.Tests.Persistence
 			roles.Count.Should().Be(expectedRoles.Length);
 			foreach (var expectedRole in expectedRoles)
 			{
-				roles.Should().Contain(r => string.Equals(r.Name, expectedRole, StringComparison.Ordinal));
+				roles.Should().Contain(r => r.Name == expectedRole);
 			}
 		}
 
