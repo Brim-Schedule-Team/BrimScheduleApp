@@ -22,7 +22,8 @@ namespace BrimSchedule.API
 			}
 			catch (Exception ex)
 			{
-				logger.Error("Application startup exception", ex);
+				logger.Error("Application encountered a critical error and will be shut down", ex);
+				throw;
 			}
 		}
 

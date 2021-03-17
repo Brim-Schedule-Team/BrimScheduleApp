@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using BrimSchedule.Domain.Constants;
 using BrimSchedule.Persistence.EF;
 using BrimSchedule.Persistence.Interfaces;
@@ -38,6 +39,12 @@ namespace BrimSchedule.Tests.Persistence
 			_unitOfWork = new EFUnitOfWork(dbContext);
 		}
 
+		[TearDown]
+		public void TearDownPerTest()
+		{
+			_unitOfWork.Dispose();
+		}
+
 		[Test]
 		public void Roles_ShouldReturnTwoRoles_ForUserAndAdmin()
 		{
@@ -48,7 +55,7 @@ namespace BrimSchedule.Tests.Persistence
 			roles.Count.Should().Be(expectedRoles.Length);
 			foreach (var expectedRole in expectedRoles)
 			{
-				roles.Should().Contain(r => string.Equals(r.Name, expectedRole));
+				roles.Should().Contain(r => string.Equals(r.Name, expectedRole, StringComparison.Ordinal));
 			}
 		}
 

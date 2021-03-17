@@ -11,7 +11,6 @@ using BrimSchedule.API.Services;
 using BrimSchedule.API.SwaggerConfiguration;
 using BrimSchedule.Application.Logging;
 using BrimSchedule.Domain.Models;
-using BrimSchedule.Domain.Request;
 using BrimSchedule.Persistence.EF;
 using FirebaseAdmin;
 using FirebaseAdmin.Auth;
