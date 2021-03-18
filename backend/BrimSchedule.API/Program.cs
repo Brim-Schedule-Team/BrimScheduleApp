@@ -14,6 +14,7 @@ namespace BrimSchedule.API
 		{
 			var host = CreateHostBuilder(args).Build();
 			var logger = InitializeLogger(host);
+			logger.Info("Starting web host");
 
 			try
 			{
@@ -31,7 +32,6 @@ namespace BrimSchedule.API
 		{
 			using var scope = host.Services.CreateScope();
 			var logger = scope.ServiceProvider.GetRequiredService<ILoggingManager>();
-			logger.Info("Application started");
 			return logger;
 		}
 

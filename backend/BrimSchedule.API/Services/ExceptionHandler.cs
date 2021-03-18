@@ -11,25 +11,34 @@ namespace BrimSchedule.API.Services
 {
 	public static class ExceptionHandler
 	{
+		private const int DefaultErrorStatusCode = StatusCodes.Status500InternalServerError;
+		private const string DefaultErrorMessage = "Server error occured";
+		private const string DefaultErrorContentType = "application/json";
+
 		public static async Task HandleGlobalExceptions(HttpContext context)
 		{
-			context.Response.StatusCode = 500;
-			context.Response.ContentType = "application/json";
-
 			var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 			var exception = exceptionHandlerPathFeature.Error;
 
-			const string defaultErrorMessage = "Server error occured";
-
-			var errorMessage = exception is UserFriendlyException ? exception.Message : defaultErrorMessage;
 			var errorId = Guid.NewGuid();
+			var statusCode = DefaultErrorStatusCode;
+			var errorMessage = DefaultErrorMessage;
+
+			if (exception is UserFriendlyException userFriendlyException)
+			{
+				statusCode = userFriendlyException.StatusCode ?? statusCode;
+				errorMessage = userFriendlyException.Message;
+			}
+
 			var serviceError = new ServiceError
 			{
 				ErrorId = errorId,
 				ErrorMessage = errorMessage,
 			};
-
 			var serviceErrorJson = JsonSerializer.Serialize(serviceError);
+
+			context.Response.StatusCode = statusCode;
+			context.Response.ContentType = DefaultErrorContentType;
 			await context.Response.WriteAsync(serviceErrorJson);
 
 			var logger = context.RequestServices.GetService<ILoggingManager>();

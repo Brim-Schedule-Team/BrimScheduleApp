@@ -1,11 +1,14 @@
 ﻿using System;
+using Microsoft.AspNetCore.Http;
 
 namespace BrimSchedule.API.Models
 {
 	// Throw this exception from controller if you want to return user a meaningful error message
 	public class UserFriendlyException: Exception
 	{
-		public UserFriendlyException(): base()
+		public int? StatusCode { get; set; }
+
+		public UserFriendlyException()
 		{
 		}
 
@@ -15,6 +18,11 @@ namespace BrimSchedule.API.Models
 
 		public UserFriendlyException(string message, Exception innerException): base(message, innerException)
 		{
+		}
+
+		public UserFriendlyException(string message, Exception innerException, int statusCode) : this(message, innerException)
+		{
+			StatusCode = statusCode;
 		}
 	}
 }
