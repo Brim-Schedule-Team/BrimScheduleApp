@@ -11,11 +11,11 @@ namespace BrimSchedule.API.Services
 {
 	public static class ExceptionHandler
 	{
-		private const int DefaultErrorStatusCode = StatusCodes.Status500InternalServerError;
-		private const string DefaultErrorMessage = "Server error occured";
-		private const string DefaultErrorContentType = "application/json";
+		public const int DefaultErrorStatusCode = StatusCodes.Status500InternalServerError;
+		public const string DefaultErrorMessage = "Server error occured";
+		public const string DefaultErrorContentType = "application/json";
 
-		public static async Task HandleGlobalExceptions(HttpContext context)
+		public static async Task HandleGlobalExceptionAsync(HttpContext context)
 		{
 			var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 			var exception = exceptionHandlerPathFeature.Error;

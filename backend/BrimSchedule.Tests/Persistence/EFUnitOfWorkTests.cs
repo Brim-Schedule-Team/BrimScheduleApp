@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using BrimSchedule.Domain.Constants;
 using BrimSchedule.Persistence.EF;
 using BrimSchedule.Persistence.Interfaces;
@@ -33,14 +32,14 @@ namespace BrimSchedule.Tests.Persistence
 		}
 
 		[SetUp]
-		public void SetupPerTest()
+		public void InitializeTest()
 		{
 			var dbContext = CreateDbContext(ConnectionString);
 			_unitOfWork = new EFUnitOfWork(dbContext);
 		}
 
 		[TearDown]
-		public void TearDownPerTest()
+		public void TearDownTest()
 		{
 			_unitOfWork.Dispose();
 		}

@@ -169,7 +169,7 @@ namespace BrimSchedule.API
 			{
 				app.UseExceptionHandler(errorApp =>
 				{
-					errorApp.Run(async context => { await ExceptionHandler.HandleGlobalExceptions(context); });
+					errorApp.Run(async context => { await ExceptionHandler.HandleGlobalExceptionAsync(context); });
 				});
 			}
 
