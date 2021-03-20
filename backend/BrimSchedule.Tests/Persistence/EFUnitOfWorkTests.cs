@@ -1,7 +1,6 @@
 ﻿using System.Linq;
 using BrimSchedule.Domain.Constants;
 using BrimSchedule.Persistence.EF;
-using BrimSchedule.Persistence.Interfaces;
 using BrimSchedule.Persistence.Repositories;
 using FluentAssertions;
 using Microsoft.EntityFrameworkCore;
@@ -14,8 +13,6 @@ namespace BrimSchedule.Tests.Persistence
 	{
 		private const string ConnectionString =
 			"Host=localhost;Database=BrimScheduleTest;User ID=postgres;Password=12345";
-
-		private IUnitOfWork _unitOfWork;
 
 		[OneTimeSetUp]
 		public void OneTimeSetup()
@@ -31,24 +28,20 @@ namespace BrimSchedule.Tests.Persistence
 			dbContext.Database.EnsureDeleted();
 		}
 
-		[SetUp]
-		public void SetupPerTest()
-		{
-			var dbContext = CreateDbContext(ConnectionString);
-			_unitOfWork = new EFUnitOfWork(dbContext);
-		}
-
 		[Test]
 		public void Roles_ShouldReturnTwoRoles_ForUserAndAdmin()
 		{
+			using var dbContext = CreateDbContext(ConnectionString);
+			using var unitOfWork = new EFUnitOfWork(dbContext);
+
 			var expectedRoles = new[] { RoleNames.Admin, RoleNames.User };
 
-			var roles = _unitOfWork.Roles.Get().ToList();
+			var actualRoles = unitOfWork.Roles.Get().ToList();
 
-			roles.Count.Should().Be(expectedRoles.Length);
+			actualRoles.Count.Should().Be(expectedRoles.Length);
 			foreach (var expectedRole in expectedRoles)
 			{
-				roles.Should().Contain(r => string.Equals(r.Name, expectedRole));
+				actualRoles.Should().Contain(r => r.Name == expectedRole);
 			}
 		}
 

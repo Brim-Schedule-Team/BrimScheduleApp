@@ -1,3 +1,5 @@
+using System;
+using BrimSchedule.Application.Logging;
 using BrimSchedule.Persistence.EF;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -11,10 +13,26 @@ namespace BrimSchedule.API
 		public static void Main(string[] args)
 		{
 			var host = CreateHostBuilder(args).Build();
+			var logger = InitializeLogger(host);
+			logger.Info("Starting web host");
 
-			ExecuteDatabaseMigrations(host);
+			try
+			{
+				ExecuteDatabaseMigrations(host);
+				host.Run();
+			}
+			catch (Exception ex)
+			{
+				logger.Error("Application encountered a critical error and will be shut down", ex);
+				throw;
+			}
+		}
 
-			host.Run();
+		private static ILoggingManager InitializeLogger(IHost host)
+		{
+			using var scope = host.Services.CreateScope();
+			var logger = scope.ServiceProvider.GetRequiredService<ILoggingManager>();
+			return logger;
 		}
 
 		private static IHostBuilder CreateHostBuilder(string[] args) =>
