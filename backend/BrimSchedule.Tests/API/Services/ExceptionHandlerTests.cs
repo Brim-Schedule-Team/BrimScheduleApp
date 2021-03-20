@@ -76,6 +76,24 @@ namespace BrimSchedule.Tests.API.Services
 			AssertResponse(expectedStatusCode, expectedErrorMessage, exception);
 		}
 
+		[Test]
+		public async Task HandleGlobalException_ShouldSerializeOriginalException_ForDevelopmentMode()
+		{
+			var innerExceptionMessage = "Inner exception test message";
+			var innerException = new InvalidOperationException(innerExceptionMessage);
+
+			var expectedErrorMessage = "Test exception message";
+			var expectedStatusCode = StatusCodes.Status401Unauthorized;
+			var exception = new UserFriendlyException(expectedErrorMessage, innerException, expectedStatusCode);
+
+			var httpContextMock = MockHttpContext(exception);
+
+			await ExceptionHandler.HandleGlobalExceptionAsync(httpContextMock, true);
+
+			AssertResponse(expectedStatusCode, expectedErrorMessage, exception);
+			AssertResponseContainsText(innerExceptionMessage);
+		}
+
 		private HttpContext MockHttpContext(Exception exception)
 		{
 			var exceptionHandlerFeatureMock = new Mock<IExceptionHandlerPathFeature>();
@@ -101,11 +119,22 @@ namespace BrimSchedule.Tests.API.Services
 			_responseMock.VerifySet(r => r.StatusCode = statusCode);
 			_responseMock.VerifySet(r => r.ContentType = ExceptionHandler.DefaultErrorContentType);
 
-			var actualResponseContent = Encoding.UTF8.GetString(_actualResponseStream.ToArray());
-			var deserializedResponse = JsonSerializer.Deserialize<ServiceError>(actualResponseContent);
+			var actualResponseContent = GetResponseContent();
+			var deserializedResponse = JsonSerializer.Deserialize<EndpointError>(actualResponseContent);
 			deserializedResponse.ErrorMessage.Should().Be(errorMessage);
 
 			_loggerMock.Verify(l => l.Error(actualResponseContent, exception), Times.Once);
+		}
+
+		private void AssertResponseContainsText(string text)
+		{
+			var actualResponseContent = GetResponseContent();
+			actualResponseContent.Contains(text).Should().BeTrue();
+		}
+
+		private string GetResponseContent()
+		{
+			return Encoding.UTF8.GetString(_actualResponseStream.ToArray());
 		}
 	}
 }

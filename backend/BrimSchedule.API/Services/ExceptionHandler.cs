@@ -1,11 +1,12 @@
 ﻿using System;
-using System.Text.Json;
 using System.Threading.Tasks;
 using BrimSchedule.API.Models;
 using BrimSchedule.Application.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Newtonsoft.Json;
+using JsonSerializer = System.Text.Json.JsonSerializer;
 
 namespace BrimSchedule.API.Services
 {
@@ -15,7 +16,7 @@ namespace BrimSchedule.API.Services
 		public const string DefaultErrorMessage = "Server error occured";
 		public const string DefaultErrorContentType = "application/json";
 
-		public static async Task HandleGlobalExceptionAsync(HttpContext context)
+		public static async Task HandleGlobalExceptionAsync(HttpContext context, bool isDevelopment = false)
 		{
 			var exceptionHandlerPathFeature = context.Features.Get<IExceptionHandlerPathFeature>();
 			var exception = exceptionHandlerPathFeature.Error;
@@ -30,19 +31,38 @@ namespace BrimSchedule.API.Services
 				errorMessage = userFriendlyException.Message;
 			}
 
-			var serviceError = new ServiceError
+			var endpointError = new EndpointError
 			{
 				ErrorId = errorId,
 				ErrorMessage = errorMessage,
 			};
-			var serviceErrorJson = JsonSerializer.Serialize(serviceError);
+
+			var responseContent = SerializeEndpointError(endpointError, exception, isDevelopment);
 
 			context.Response.StatusCode = statusCode;
 			context.Response.ContentType = DefaultErrorContentType;
-			await context.Response.WriteAsync(serviceErrorJson);
+			await context.Response.WriteAsync(responseContent);
 
 			var logger = context.RequestServices.GetService<ILoggingManager>();
-			logger?.Error(serviceErrorJson, exception);
+			logger?.Error(responseContent, exception);
+		}
+
+		private static string SerializeEndpointError(EndpointError endpointError, Exception originalException, bool isDevelopment)
+		{
+			// Include original exception and beautify Json response for Development mode
+			if (isDevelopment)
+			{
+				var serializerSettings = new JsonSerializerSettings
+				{
+					Formatting = Formatting.Indented,
+					NullValueHandling = NullValueHandling.Ignore,
+				};
+				endpointError.OriginalException = originalException;
+				return JsonConvert.SerializeObject(endpointError, serializerSettings);
+			}
+
+			// Use System.Text.Json for Production serialization
+			return JsonSerializer.Serialize(endpointError);
 		}
 	}
 }
