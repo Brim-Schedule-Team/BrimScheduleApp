@@ -52,6 +52,7 @@ namespace BrimSchedule.API.Services
 			// Include original exception and beautify Json response for Development mode
 			if (isDevelopment)
 			{
+				// Use Newtonsoft serializer for Development mode as it's more convenient to use, but less secure than System.Text.Json
 				var serializerSettings = new JsonSerializerSettings
 				{
 					Formatting = Formatting.Indented,
