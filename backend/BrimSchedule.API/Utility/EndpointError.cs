@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.Json.Serialization;
 
-namespace BrimSchedule.API.Models
+namespace BrimSchedule.API.Utility
 {
 	public class EndpointError
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using BrimSchedule.API.Models;
+using BrimSchedule.API.Utility;
 using BrimSchedule.Application.Logging;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Http;

@@ -5,8 +5,8 @@ using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
-using BrimSchedule.API.Models;
 using BrimSchedule.API.Services;
+using BrimSchedule.API.Utility;
 using BrimSchedule.Application.Logging;
 using FluentAssertions;
 using Microsoft.AspNetCore.Diagnostics;
@@ -129,7 +129,7 @@ namespace BrimSchedule.Tests.API.Services
 		private void AssertResponseContainsText(string text)
 		{
 			var actualResponseContent = GetResponseContent();
-			actualResponseContent.Contains(text).Should().BeTrue();
+			actualResponseContent.Contains(text, StringComparison.Ordinal).Should().BeTrue();
 		}
 
 		private string GetResponseContent()

@@ -1,7 +1,6 @@
 ﻿using System;
-using Microsoft.AspNetCore.Http;
 
-namespace BrimSchedule.API.Models
+namespace BrimSchedule.API.Utility
 {
 	// Throw this exception from controller if you want to return user a meaningful error message
 	public class UserFriendlyException: Exception
