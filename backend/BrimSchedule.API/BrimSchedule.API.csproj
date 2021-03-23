@@ -28,9 +28,4 @@
       <ProjectReference Include="..\BrimSchedule.Persistence\BrimSchedule.Persistence.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <Folder Include="Models" />
-      <Folder Include="Settings" />
-    </ItemGroup>
-
 </Project>
