@@ -5,12 +5,12 @@ namespace BrimSchedule.API.Utility
 {
 	public static class ControllerExtensions
 	{
-		public static ActionResult Service(this Controller controller, ServiceResult serviceResult)
+		public static ActionResult Service<T>(this Controller controller, ServiceResult<T> serviceResult)
 		{
 			if (serviceResult == null)
-				throw new ArgumentNullException(nameof(serviceResult), "You can't return null service result");
+				throw new ArgumentNullException(nameof(serviceResult), "Service result can't be null");
 
-			return serviceResult.IsSuccess
+			return serviceResult.Success
 				? controller.Ok(serviceResult.Content)
 				: controller.BadRequest(serviceResult.ErrorMessage);
 		}

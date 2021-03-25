@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 
-namespace BrimSchedule.Persistence.Interfaces
+namespace BrimSchedule.Application.Interfaces
 {
 	public interface IRepository<TEntity>
 		where TEntity: class

@@ -1,11 +1,9 @@
-﻿using BrimSchedule.Domain.Constants;
-using BrimSchedule.Domain.Models;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using BrimSchedule.Domain.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace BrimSchedule.Persistence.EF
 {
-	public class BrimScheduleContext: IdentityDbContext<User, Role, int>
+	public class BrimScheduleContext: DbContext
 	{
 		private readonly DbContextOptions _dbContextOptions;
 
@@ -32,14 +30,8 @@ namespace BrimSchedule.Persistence.EF
 		{
 			base.OnModelCreating(modelBuilder);
 
-			modelBuilder.Entity<User>()
-				.HasOne(u => u.Profile)
-				.WithOne(p => p.User)
-				.HasForeignKey<Profile>(p => p.UserId);
-
-			modelBuilder.Entity<User>()
-				.HasIndex(u => u.Login)
-				.IsUnique();
+			modelBuilder.Entity<Attendance>()
+				.HasIndex(a => a.UserId);
 
 			modelBuilder.Entity<Lesson>()
 				.Property(c => c.Name)
@@ -49,6 +41,10 @@ namespace BrimSchedule.Persistence.EF
 				.Property(a => a.Action)
 				.IsRequired();
 
+			modelBuilder.Entity<Profile>()
+				.HasIndex(p => p.UserId)
+				.IsUnique();
+
 			modelBuilder.Entity<UserSuggestionList>()
 				.Property(u => u.UsersJson)
 				.IsRequired();
@@ -56,11 +52,6 @@ namespace BrimSchedule.Persistence.EF
 			modelBuilder.Entity<UserSuggestionList>()
 				.HasIndex(u => u.Name)
 				.IsUnique();
-
-			modelBuilder.Entity<Role>().HasData(
-				new Role { Id = 1, Name = RoleNames.User },
-				new Role { Id = 2, Name = RoleNames.Admin }
-			);
 		}
 
 		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)

@@ -1,9 +1,9 @@
 ﻿namespace BrimSchedule.API.Utility
 {
-	public class ServiceResult
+	public class ServiceResult<T>
 	{
-		public bool IsSuccess { get; set; }
-		public object Content { get; set; }
+		public bool Success { get; set; }
+		public T Content { get; set; }
 		public string ErrorMessage { get; set; }
 	}
 }

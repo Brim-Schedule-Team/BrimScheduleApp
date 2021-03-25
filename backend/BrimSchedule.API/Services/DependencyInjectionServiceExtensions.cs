@@ -1,6 +1,6 @@
-﻿using BrimSchedule.Application.Logging;
+﻿using BrimSchedule.Application.Interfaces;
+using BrimSchedule.Application.Logging;
 using BrimSchedule.Persistence.EF;
-using BrimSchedule.Persistence.Interfaces;
 using BrimSchedule.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;

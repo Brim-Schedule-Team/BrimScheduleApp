@@ -15,7 +15,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\BrimSchedule.Domain\BrimSchedule.Domain.csproj" />
+      <ProjectReference Include="..\BrimSchedule.Application\BrimSchedule.Application.csproj" />
     </ItemGroup>
 
     <ItemGroup>

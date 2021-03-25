@@ -9,4 +9,12 @@
       <PackageReference Include="log4net" Version="2.0.12" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="Services" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BrimSchedule.Domain\BrimSchedule.Domain.csproj" />
+    </ItemGroup>
+
 </Project>

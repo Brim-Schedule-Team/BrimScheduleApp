@@ -9,8 +9,7 @@ namespace BrimSchedule.Domain.Models
 		public UserVote UserVote { get; set; }
 		public string Notes { get; set; }
 
-		public int UserId { get; set; }
-		public virtual User User { get; set; }
+		public string UserId { get; set; }
 
 		public int LessonId { get; set; }
 		public virtual Lesson Lesson { get; set; }

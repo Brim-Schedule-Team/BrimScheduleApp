@@ -5,4 +5,12 @@
         <LangVersion>9</LangVersion>
     </PropertyGroup>
 
+    <ItemGroup>
+      <ProjectReference Include="..\BrimSchedule.Application\BrimSchedule.Application.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="FirebaseAdmin" Version="2.0.0" />
+    </ItemGroup>
+
 </Project>

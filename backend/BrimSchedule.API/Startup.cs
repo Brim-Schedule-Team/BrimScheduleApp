@@ -120,9 +120,6 @@ namespace BrimSchedule.API
 						}
 					});
 				});
-
-			services.AddIdentity<User, Role>()
-				.AddEntityFrameworkStores<BrimScheduleContext>();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
