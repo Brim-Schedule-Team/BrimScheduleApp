@@ -13,12 +13,10 @@ namespace BrimSchedule.Infrastructure.Firebase
 {
 	public class UserRepository : IUserRepository
 	{
-		private readonly IUnitOfWork _unitOfWork;
 		private readonly ILoggingManager _logger;
 
-		public UserRepository(IUnitOfWork unitOfWork, ILoggingManager logger)
+		public UserRepository(ILoggingManager logger)
 		{
-			_unitOfWork = unitOfWork;
 			_logger = logger;
 		}
 
@@ -32,7 +30,6 @@ namespace BrimSchedule.Infrastructure.Firebase
 			var page = await FirebaseAuth.DefaultInstance.ListUsersAsync(options).ReadPageAsync(pageSize, cancellationToken);
 
 			var users = page.Select(ConstructUser).ToArray();
-			EnrichWithProfiles(users);
 
 			return new UserPageResult
 			{
@@ -89,6 +86,16 @@ namespace BrimSchedule.Infrastructure.Firebase
 			await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(id, claims);
 		}
 
+		public async Task SetRole(string id, string role)
+		{
+			var claims = new Dictionary<string, object>
+			{
+				{ ClaimsIdentity.DefaultNameClaimType, role }
+			};
+
+			await SetClaims(id, claims);
+		}
+
 		public async Task Delete(string id, CancellationToken cancellationToken = default)
 		{
 			await FirebaseAuth.DefaultInstance.DeleteUserAsync(id, cancellationToken);
@@ -99,9 +106,7 @@ namespace BrimSchedule.Infrastructure.Firebase
 			try
 			{
 				var userRecord = await getAction.Invoke(parameter, cancellationToken);
-				var user = ConstructUser(userRecord);
-				EnrichWithProfiles(user);
-				return user;
+				return ConstructUser(userRecord);
 			}
 			// Firebase throw FirebaseAuthException when user is not found
 			// This is suitable situation for us so we suppress exception and return null result
@@ -113,27 +118,19 @@ namespace BrimSchedule.Infrastructure.Firebase
 		}
 		private static User ConstructUser(UserRecord record)
 		{
-			var userRoles = record.CustomClaims
-				.Where(s => s.Key == ClaimsIdentity.DefaultNameClaimType)
-				.Select(s => s.Value.ToString()).ToList();
+			var userRole = record
+				.CustomClaims
+				.FirstOrDefault(s => s.Key == ClaimsIdentity.DefaultNameClaimType)
+				.Value
+				?.ToString();
 
 			return new User
 			{
 				Id = record.Uid,
 				PhoneNumber = record.PhoneNumber,
-				Roles = userRoles,
+				Role = userRole,
 				Disabled = record.Disabled,
 			};
-		}
-
-		private void EnrichWithProfiles(params User[] users)
-		{
-			var userIds = users.Select(s => s.Id).ToList();
-			var profiles = _unitOfWork.Profiles.Get(profile => userIds.Contains(profile.UserId)).ToList();
-			foreach (var user in users)
-			{
-				user.Profile = profiles.FirstOrDefault(p => p.UserId == user.Id);
-			}
 		}
 	}
 

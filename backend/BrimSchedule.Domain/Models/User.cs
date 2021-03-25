@@ -8,7 +8,7 @@ namespace BrimSchedule.Domain.Models
 		public string Id { get; set; }
 		public string PhoneNumber { get; set; }
 		public bool Disabled { get; set; }
-		public ICollection<string> Roles { get; set; } = new List<string>();
+		public string Role { get; set; }
 
 		public Profile Profile { get; set; }
 	}

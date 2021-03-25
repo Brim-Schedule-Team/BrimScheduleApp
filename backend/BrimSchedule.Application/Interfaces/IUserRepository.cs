@@ -13,6 +13,7 @@ namespace BrimSchedule.Application.Interfaces
 		Task<User> GetByPhoneNumber(string phoneNumber, CancellationToken cancellationToken = default);
 		Task<User> Insert(User entity, CancellationToken cancellationToken = default);
 		Task SetClaims(string id, IReadOnlyDictionary<string, object> claims);
+		Task SetRole(string id, string role);
 		Task Delete(string id, CancellationToken cancellationToken = default);
 	}
 }

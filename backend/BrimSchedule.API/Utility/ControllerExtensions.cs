@@ -1,4 +1,5 @@
 ﻿using System;
+using BrimSchedule.Application;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BrimSchedule.API.Utility
