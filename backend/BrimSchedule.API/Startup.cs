@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.Services.Authentication;
 using BrimSchedule.API.SwaggerConfiguration;
-using BrimSchedule.Domain.Models;
-using BrimSchedule.Persistence.EF;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -73,6 +72,13 @@ namespace BrimSchedule.API
 				};
 			});
 
+			services.AddAuthorization(options =>
+			{
+				options.FallbackPolicy = new AuthorizationPolicyBuilder()
+					.RequireAuthenticatedUser()
+					.Build();
+			});
+
 			services.AddApiVersioning(options =>
 			{
 				options.ReportApiVersions = true;
@@ -120,6 +126,10 @@ namespace BrimSchedule.API
 						}
 					});
 				});
+
+			services.AddControllersWithViews();
+			services.AddRazorPages();
+			services.AddHttpContextAccessor();
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
@@ -147,15 +157,16 @@ namespace BrimSchedule.API
 
 			UseFirebaseAuth(isDevelopment);
 
-			app.UseAuthentication();
-			app.UseAuthorization();
+            app.UseAuthentication();
+            app.UseAuthorization();
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers();
-				endpoints.MapHealthChecks("/health");
-			});
-		}
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
+                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHealthChecks("/health");
+            });
+        }
 
 		private void UseSwagger(IApplicationBuilder app, IApiVersionDescriptionProvider provider)
 		{
