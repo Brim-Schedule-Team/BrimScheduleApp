@@ -5,6 +5,7 @@ using BrimSchedule.Application.Interfaces.Repositories;
 using BrimSchedule.Application.Interfaces.Services;
 using BrimSchedule.Domain.Constants;
 using BrimSchedule.Domain.Models;
+using Microsoft.AspNetCore.Http;
 
 namespace BrimSchedule.Application.Services
 {
@@ -12,11 +13,13 @@ namespace BrimSchedule.Application.Services
 	{
 		private readonly IUnitOfWork _unitOfWork;
 		private readonly IUserRepository _userRepository;
+		private readonly IHttpContextAccessor _context;
 
-		public UserService(IUnitOfWork unitOfWork, IUserRepository userRepository)
+		public UserService(IUnitOfWork unitOfWork, IUserRepository userRepository, IHttpContextAccessor context)
 		{
 			_unitOfWork = unitOfWork;
 			_userRepository = userRepository;
+			_context = context;
 		}
 
 		public async Task<ServiceResult<ICollection<User>>> GetUsers()
@@ -33,7 +36,7 @@ namespace BrimSchedule.Application.Services
 			var user = await _userRepository.GetById(id);
 			if (user == null)
 			{
-				return ServiceResult.FailureResult<User>($"User id={id} not found");
+				return ServiceResult.FailureResult<User>($"User id '{id}' not found");
 			}
 
 			EnrichWithProfiles(user);
@@ -46,7 +49,7 @@ namespace BrimSchedule.Application.Services
 			var user = await _userRepository.GetByPhoneNumber(phoneNumber);
 			if (user == null)
 			{
-				return ServiceResult.FailureResult<User>($"User with phoneNumber={phoneNumber} not found");
+				return ServiceResult.FailureResult<User>($"User with phoneNumber '{phoneNumber}' not found");
 			}
 
 			EnrichWithProfiles(user);
@@ -61,6 +64,10 @@ namespace BrimSchedule.Application.Services
 
 		public async Task<ServiceResult> DemoteToUser(string id)
 		{
+			var userId = _context.HttpContext.User.Identity?.Name;
+
+			if (userId == id) return ServiceResult.FailureResult("Admin can't demote himself");
+
 			return await ChangeUserRole(id, RoleNames.User);
 		}
 
@@ -90,7 +97,7 @@ namespace BrimSchedule.Application.Services
 			var user = await _userRepository.GetById(userId);
 			if (user == null)
 			{
-				return ServiceResult.FailureResult($"User id={userId} not found");
+				return ServiceResult.FailureResult($"User id '{userId}' not found");
 			}
 
 			if (user.Role != role)
