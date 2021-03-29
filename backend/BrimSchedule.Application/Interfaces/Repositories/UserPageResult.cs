@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using BrimSchedule.Domain.Models;
 
-namespace BrimSchedule.Application.Interfaces
+namespace BrimSchedule.Application.Interfaces.Repositories
 {
 	public class UserPageResult
 	{

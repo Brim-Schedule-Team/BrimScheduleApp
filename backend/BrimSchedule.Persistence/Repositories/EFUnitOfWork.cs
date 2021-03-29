@@ -1,5 +1,5 @@
 ﻿using System;
-using BrimSchedule.Application.Interfaces;
+using BrimSchedule.Application.Interfaces.Repositories;
 using BrimSchedule.Domain.Models;
 using BrimSchedule.Persistence.EF;
 

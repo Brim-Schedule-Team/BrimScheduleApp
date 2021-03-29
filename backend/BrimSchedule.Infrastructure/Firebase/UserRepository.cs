@@ -4,7 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Threading.Tasks;
-using BrimSchedule.Application.Interfaces;
+using BrimSchedule.Application.Interfaces.Repositories;
 using BrimSchedule.Application.Logging;
 using BrimSchedule.Domain.Models;
 using FirebaseAdmin.Auth;
@@ -36,6 +36,21 @@ namespace BrimSchedule.Infrastructure.Firebase
 				Users = users,
 				NextPageToken = page.NextPageToken
 			};
+		}
+
+		public async Task<ICollection<User>> ListAllUsers(CancellationToken cancellationToken = default)
+		{
+			var users = new List<User>();
+			var pageToken = string.Empty;
+
+			do
+			{
+				var result = await ListUsers(pageToken: pageToken, cancellationToken: cancellationToken);
+				pageToken = result.NextPageToken;
+				users.AddRange(result.Users);
+			} while (!string.IsNullOrEmpty(pageToken));
+
+			return users;
 		}
 
 		public async Task<ICollection<User>> Get(IEnumerable<string> ids, CancellationToken cancellationToken = default)
@@ -81,19 +96,19 @@ namespace BrimSchedule.Infrastructure.Firebase
 			return ConstructUser(userRecord);
 		}
 
-		public async Task SetClaims(string id, IReadOnlyDictionary<string, object> claims)
+		public async Task SetClaims(string id, IReadOnlyDictionary<string, object> claims, CancellationToken cancellationToken = default)
 		{
-			await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(id, claims);
+			await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(id, claims, cancellationToken);
 		}
 
-		public async Task SetRole(string id, string role)
+		public async Task SetRole(string id, string role, CancellationToken cancellationToken = default)
 		{
 			var claims = new Dictionary<string, object>
 			{
 				{ ClaimsIdentity.DefaultNameClaimType, role }
 			};
 
-			await SetClaims(id, claims);
+			await SetClaims(id, claims, cancellationToken);
 		}
 
 		public async Task Delete(string id, CancellationToken cancellationToken = default)
