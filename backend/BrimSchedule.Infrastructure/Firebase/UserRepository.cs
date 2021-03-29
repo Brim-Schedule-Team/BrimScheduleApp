@@ -107,7 +107,7 @@ namespace BrimSchedule.Infrastructure.Firebase
 		{
 			var claims = new Dictionary<string, object>
 			{
-				{ ClaimsIdentity.DefaultNameClaimType, role }
+				{ ClaimsIdentity.DefaultRoleClaimType, role }
 			};
 
 			await SetClaims(id, claims, cancellationToken);

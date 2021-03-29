@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
+﻿using System.Linq;
 using System.Threading.Tasks;
+using BrimSchedule.API.Utility;
+using BrimSchedule.Application.Interfaces.Services;
 using BrimSchedule.Domain.Constants;
-using FirebaseAdmin.Auth;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -14,11 +13,13 @@ namespace BrimSchedule.API.Controllers
     public class AuthTestController : Controller
     {
         private readonly IHttpContextAccessor _context;
+		private readonly IUserService _userService;
 
-        public AuthTestController(IHttpContextAccessor context)
-        {
-            _context = context;
-        }
+        public AuthTestController(IHttpContextAccessor context, IUserService userService)
+		{
+			_context = context;
+			_userService = userService;
+		}
 
         // GET
 		[AllowAnonymous]
@@ -43,24 +44,16 @@ namespace BrimSchedule.API.Controllers
 		[HttpPost]
 		public async Task<IActionResult> GrantAdminRights()
 		{
-			var claims = new Dictionary<string, object>()
-			{
-				{ ClaimsIdentity.DefaultRoleClaimType, RoleNames.Admin }
-			};
-
-			return await SetCustomClaims(claims);
+			var result = await _userService.PromoteToAdmin(GetCurrentUserId());
+			return this.Service(result);
 		}
 
 		[HttpPost]
 		[Authorize(Roles = RoleNames.Admin)]
 		public async Task<IActionResult> DemoteAdmin()
 		{
-			var claims = new Dictionary<string, object>()
-			{
-				{ ClaimsIdentity.DefaultRoleClaimType, RoleNames.User }
-			};
-
-			return await SetCustomClaims(claims);
+			var result = await _userService.DemoteToUser(GetCurrentUserId());
+			return this.Service(result);
 		}
 
 		private IActionResult GetUserContext()
@@ -78,22 +71,6 @@ namespace BrimSchedule.API.Controllers
 			});
 		}
 
-		private async Task<IActionResult> SetCustomClaims(IReadOnlyDictionary<string, object> claims)
-		{
-			var user = _context.HttpContext?.User;
-			if (user == null)
-			{
-				return BadRequest("HttpContext is null");
-			}
-
-			if (user.Identity == null)
-			{
-				return BadRequest("Users identity is null");
-			}
-
-			await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(user.Identity.Name, claims);
-
-			return Ok();
-		}
+		private string GetCurrentUserId() => _context.HttpContext?.User?.Identity?.Name;
 	}
 }

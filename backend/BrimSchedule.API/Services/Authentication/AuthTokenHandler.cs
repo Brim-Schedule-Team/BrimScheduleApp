@@ -37,6 +37,7 @@ namespace BrimSchedule.API.Services.Authentication
 			context.Principal = new ClaimsPrincipal(
 				new ClaimsIdentity(
 					decodedToken.Claims.Select(c => new Claim(c.Key, c.Value.ToString()))
+						.Where(claim => claim.Type != ClaimsIdentity.DefaultNameClaimType)
 						.Append(new Claim(ClaimsIdentity.DefaultNameClaimType, decodedToken.Uid)),
 					JwtBearerDefaults.AuthenticationScheme
 				));

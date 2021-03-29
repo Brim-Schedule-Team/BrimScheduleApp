@@ -584,8 +584,12 @@
             return;
           }
 
-          if (response.status !== 200) {
-              alert(`Ошибка HTTP: ${response.status}. ${response.text()}`);
+          if (!response.ok) {
+              response.text()
+               .then(text => {
+                 alert(`Ошибка HTTP: ${response.status}. ${text}`);
+               });
+
               return;
           }
 
