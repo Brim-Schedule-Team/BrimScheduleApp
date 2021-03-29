@@ -8,7 +8,6 @@ using BrimSchedule.API.SwaggerConfiguration;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -72,12 +71,7 @@ namespace BrimSchedule.API
 				};
 			});
 
-			services.AddAuthorization(options =>
-			{
-				options.FallbackPolicy = new AuthorizationPolicyBuilder()
-					.RequireAuthenticatedUser()
-					.Build();
-			});
+			services.AddAuthorization();
 
 			services.AddApiVersioning(options =>
 			{
@@ -110,9 +104,10 @@ namespace BrimSchedule.API
 					options.AddSecurityDefinition(AuthTokenHandler.Bearer, new OpenApiSecurityScheme
 					{
 						In = ParameterLocation.Header,
-						Description = $"Введите в поле JWT токен с припиской {AuthTokenHandler.Bearer}",
-						Name = "Authorization",
-						Type = SecuritySchemeType.ApiKey
+						Description = $"Введите в поле JWT токен с префиксом {AuthTokenHandler.Bearer}",
+						Name = AuthTokenHandler.HeaderName,
+						Type = SecuritySchemeType.ApiKey,
+						Scheme = AuthTokenHandler.Bearer
 					});
 
 					options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -120,7 +115,14 @@ namespace BrimSchedule.API
 						{
 							new OpenApiSecurityScheme
 							{
-								Name = AuthTokenHandler.Bearer
+								Name = AuthTokenHandler.Bearer,
+								Reference = new OpenApiReference
+								{
+									Type = ReferenceType.SecurityScheme,
+									Id = AuthTokenHandler.Bearer
+								},
+								Scheme = "oauth2",
+								In = ParameterLocation.Header,
 							},
 							new List<string>()
 						}
@@ -163,8 +165,12 @@ namespace BrimSchedule.API
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
-                endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
-                endpoints.MapHealthChecks("/health");
+				endpoints.MapHealthChecks("/health");
+
+				if (isDevelopment)
+				{
+					endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+				}
             });
         }
 

@@ -10,10 +10,11 @@ namespace BrimSchedule.API.Services.Authentication
 	public static class AuthTokenHandler
 	{
 		public const string Bearer = "Bearer";
+		public const string HeaderName = "Authorization";
 
 		public static async Task HandleTokenAsync(MessageReceivedContext context)
 		{
-			var authorization = context.Request.Headers["Authorization"].ToString();
+			var authorization = context.Request.Headers[HeaderName].ToString();
 
 			if (string.IsNullOrEmpty(authorization))
 			{
