@@ -22,10 +22,12 @@ namespace BrimSchedule.Infrastructure.Firebase
 
 		public async Task<UserPageResult> ListUsers(int pageSize = 100, string pageToken = null, CancellationToken cancellationToken = default)
 		{
-			var options = new ListUsersOptions
-			{
-				PageToken = pageToken
-			};
+			var options = string.IsNullOrEmpty(pageToken)
+				? null
+				: new ListUsersOptions
+				{
+					PageToken = pageToken
+				};
 
 			var page = await FirebaseAuth.DefaultInstance.ListUsersAsync(options).ReadPageAsync(pageSize, cancellationToken);
 

@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\BrimSchedule.Application\BrimSchedule.Application.csproj" />
+      <ProjectReference Include="..\BrimSchedule.Infrastructure\BrimSchedule.Infrastructure.csproj" />
       <ProjectReference Include="..\BrimSchedule.Persistence\BrimSchedule.Persistence.csproj" />
     </ItemGroup>
 
