@@ -2,9 +2,9 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using BrimSchedule.API.Config.SwaggerConfiguration;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.Services.Authentication;
-using BrimSchedule.API.SwaggerConfiguration;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -132,6 +132,8 @@ namespace BrimSchedule.API
 			services.AddControllersWithViews();
 			services.AddRazorPages();
 			services.AddHttpContextAccessor();
+
+			AddFirebaseAuth(CurrentEnvironment.IsDevelopment());
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
@@ -157,9 +159,7 @@ namespace BrimSchedule.API
 				app.UseHsts();
 			}
 
-			UseFirebaseAuth(isDevelopment);
-
-            app.UseAuthentication();
+			app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
@@ -192,7 +192,7 @@ namespace BrimSchedule.API
 				});
 		}
 
-		private static void UseFirebaseAuth(bool isDevelopment)
+		private static void AddFirebaseAuth(bool isDevelopment)
 		{
 			var firebaseConfigFilePath =
 				$"./brimschedule-firebase-admin-sdk{(isDevelopment ? "-test" : string.Empty)}.json";

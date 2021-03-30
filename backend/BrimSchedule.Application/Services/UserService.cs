@@ -57,6 +57,19 @@ namespace BrimSchedule.Application.Services
 			return ServiceResult.SuccessResult(user);
 		}
 
+		public async Task<ServiceResult<User>> Add(string phoneNumber)
+		{
+			var user = await _userRepository.GetByPhoneNumber(phoneNumber);
+
+			if (user != null)
+				return ServiceResult.FailureResult<User>($"User with phoneNumber '{phoneNumber} already exists");
+
+			// TODO add utils for checking phoneNUmber format
+
+			user = await _userRepository.Insert(new User { PhoneNumber = phoneNumber });
+			return ServiceResult.SuccessResult(user);
+		}
+
 		public async Task<ServiceResult> PromoteToAdmin(string id)
 		{
 			return await ChangeUserRole(id, RoleNames.Admin);

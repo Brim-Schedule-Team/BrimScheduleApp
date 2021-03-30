@@ -1,4 +1,5 @@
-﻿using BrimSchedule.Application.Interfaces.Repositories;
+﻿using BrimSchedule.API.Config;
+using BrimSchedule.Application.Interfaces.Repositories;
 using BrimSchedule.Application.Interfaces.Services;
 using BrimSchedule.Application.Logging;
 using BrimSchedule.Application.Services;
@@ -34,6 +35,9 @@ namespace BrimSchedule.API.Services
 		/// <param name="configuration"></param>
 		private static void InjectCommonServices(IServiceCollection services, IConfiguration configuration)
 		{
+			// Inject configuration
+			services.Configure<SeederOptions>(configuration.GetSection(SeederOptions.SectionName));
+
 			// Inject DB context and repositories
 			var connectionString = configuration.GetConnectionString(nameof(BrimScheduleContext));
 			services.AddDbContext<BrimScheduleContext>(opts => opts.UseNpgsql(connectionString));

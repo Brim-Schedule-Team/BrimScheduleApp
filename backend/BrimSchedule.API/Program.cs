@@ -1,10 +1,14 @@
 using System;
+using BrimSchedule.API.Config;
+using BrimSchedule.API.Services;
+using BrimSchedule.Application.Interfaces.Services;
 using BrimSchedule.Application.Logging;
 using BrimSchedule.Persistence.EF;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace BrimSchedule.API
 {
@@ -19,6 +23,7 @@ namespace BrimSchedule.API
 			try
 			{
 				ExecuteDatabaseMigrations(host);
+				Seed(host);
 				host.Run();
 			}
 			catch (Exception ex)
@@ -31,8 +36,7 @@ namespace BrimSchedule.API
 		private static ILoggingManager InitializeLogger(IHost host)
 		{
 			using var scope = host.Services.CreateScope();
-			var logger = scope.ServiceProvider.GetRequiredService<ILoggingManager>();
-			return logger;
+			return scope.ServiceProvider.GetRequiredService<ILoggingManager>();
 		}
 
 		private static IHostBuilder CreateHostBuilder(string[] args) =>
@@ -44,6 +48,14 @@ namespace BrimSchedule.API
 			using var scope = host.Services.CreateScope();
 			using var context = scope.ServiceProvider.GetRequiredService<BrimScheduleContext>();
 			context.Database.Migrate();
+		}
+
+		private static void Seed(IHost host)
+		{
+			using var scope = host.Services.CreateScope();
+			var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+			var seederOptions = scope.ServiceProvider.GetRequiredService<IOptions<SeederOptions>>();
+			new Seeder(userService, seederOptions).Seed().Wait();
 		}
 	}
 }
