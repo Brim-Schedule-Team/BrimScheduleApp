@@ -6,7 +6,7 @@ namespace BrimSchedule.API.Utility
 {
 	public static class ControllerExtensions
 	{
-		public static IActionResult Service<TModel>(this ControllerBase controller, ServiceResult<TModel> serviceResult)
+		public static ActionResult Service<TModel>(this ControllerBase controller, ServiceResult<TModel> serviceResult)
 		{
 			if (serviceResult == null)
 				throw new ArgumentNullException(nameof(serviceResult), "Service result can't be null");
@@ -15,7 +15,7 @@ namespace BrimSchedule.API.Utility
 				serviceResult.ErrorMessage);
 		}
 
-		public static IActionResult Service(this ControllerBase controller, ServiceResult serviceResult)
+		public static ActionResult Service(this ControllerBase controller, ServiceResult serviceResult)
 		{
 			if (serviceResult == null)
 				throw new ArgumentNullException(nameof(serviceResult), "Service result can't be null");
@@ -23,7 +23,7 @@ namespace BrimSchedule.API.Utility
 			return HandleServiceResult(controller, serviceResult.Success, errorMsg: serviceResult.ErrorMessage);
 		}
 
-		private static IActionResult HandleServiceResult(ControllerBase controller, bool success, object content = null,
+		private static ActionResult HandleServiceResult(ControllerBase controller, bool success, object content = null,
 			string errorMsg = null)
 			=> success
 				? content == null
