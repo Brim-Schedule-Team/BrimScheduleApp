@@ -42,8 +42,8 @@ namespace BrimSchedule.Tests.API.Services
 		{
 			var exception = new InvalidOperationException("Test exception message");
 			var httpContextMock = MockHttpContext(exception);
-			var expectedStatusCode = ExceptionHandler.DefaultErrorStatusCode;
-			var expectedErrorMessage = ExceptionHandler.DefaultErrorMessage;
+			const int expectedStatusCode = ExceptionHandler.DefaultErrorStatusCode;
+			const string expectedErrorMessage = ExceptionHandler.DefaultErrorMessage;
 
 			await ExceptionHandler.HandleGlobalExceptionAsync(httpContextMock);
 
@@ -53,10 +53,10 @@ namespace BrimSchedule.Tests.API.Services
 		[Test]
 		public async Task HandleGlobalException_ShouldHandleUserFriendlyException_WithDefaultStatusCode_AndCustomErrorMessage()
 		{
-			var expectedErrorMessage = "Test exception message";
+			const string expectedErrorMessage = "Test exception message";
 			var exception = new UserFriendlyException(expectedErrorMessage);
 			var httpContextMock = MockHttpContext(exception);
-			var expectedStatusCode = ExceptionHandler.DefaultErrorStatusCode;
+			const int expectedStatusCode = ExceptionHandler.DefaultErrorStatusCode;
 
 			await ExceptionHandler.HandleGlobalExceptionAsync(httpContextMock);
 
@@ -66,8 +66,8 @@ namespace BrimSchedule.Tests.API.Services
 		[Test]
 		public async Task HandleGlobalException_ShouldHandleUserFriendlyException_WithCustomStatusCode_AndCustomErrorMessage()
 		{
-			var expectedErrorMessage = "Test exception message";
-			var expectedStatusCode = StatusCodes.Status401Unauthorized;
+			const string expectedErrorMessage = "Test exception message";
+			const int expectedStatusCode = StatusCodes.Status401Unauthorized;
 			var exception = new UserFriendlyException(expectedErrorMessage, null, expectedStatusCode);
 			var httpContextMock = MockHttpContext(exception);
 
@@ -79,11 +79,11 @@ namespace BrimSchedule.Tests.API.Services
 		[Test]
 		public async Task HandleGlobalException_ShouldSerializeOriginalException_ForDevelopmentMode()
 		{
-			var innerExceptionMessage = "Inner exception test message";
+			const string innerExceptionMessage = "Inner exception test message";
 			var innerException = new InvalidOperationException(innerExceptionMessage);
 
-			var expectedErrorMessage = "Test exception message";
-			var expectedStatusCode = StatusCodes.Status401Unauthorized;
+			const string expectedErrorMessage = "Test exception message";
+			const int expectedStatusCode = StatusCodes.Status401Unauthorized;
 			var exception = new UserFriendlyException(expectedErrorMessage, innerException, expectedStatusCode);
 
 			var httpContextMock = MockHttpContext(exception);
@@ -121,7 +121,7 @@ namespace BrimSchedule.Tests.API.Services
 
 			var actualResponseContent = GetResponseContent();
 			var deserializedResponse = JsonSerializer.Deserialize<EndpointError>(actualResponseContent);
-			deserializedResponse.ErrorMessage.Should().Be(errorMessage);
+			deserializedResponse?.ErrorMessage.Should().Be(errorMessage);
 
 			_loggerMock.Verify(l => l.Error(actualResponseContent, exception), Times.Once);
 		}

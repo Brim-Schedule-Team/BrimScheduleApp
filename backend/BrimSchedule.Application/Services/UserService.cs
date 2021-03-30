@@ -64,7 +64,7 @@ namespace BrimSchedule.Application.Services
 			if (user != null)
 				return ServiceResult.FailureResult<User>($"User with phoneNumber '{phoneNumber} already exists");
 
-			// TODO add utils for checking phoneNUmber format
+			// TODO add utils for checking phoneNumber format
 
 			user = await _userRepository.Insert(new User { PhoneNumber = phoneNumber });
 			return ServiceResult.SuccessResult(user);
@@ -79,7 +79,7 @@ namespace BrimSchedule.Application.Services
 		{
 			var userId = _context.HttpContext.User.Identity?.Name;
 
-			if (userId == id) return ServiceResult.FailureResult("Admin can't demote himself");
+			if (userId == id) return ServiceResult.FailureResult("User can't demote himself");
 
 			return await ChangeUserRole(id, RoleNames.User);
 		}
