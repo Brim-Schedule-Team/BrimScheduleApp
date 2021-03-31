@@ -43,14 +43,14 @@ namespace BrimSchedule.Infrastructure.Firebase
 		public async Task<ICollection<User>> ListAllUsers(CancellationToken cancellationToken = default)
 		{
 			var users = new List<User>();
-			var pageToken = string.Empty;
 
-			do
+			var pagedEnumerable = FirebaseAuth.DefaultInstance.ListUsersAsync(null);
+			var responses = pagedEnumerable.AsRawResponses().GetAsyncEnumerator(cancellationToken);
+			while (await responses.MoveNextAsync())
 			{
-				var result = await ListUsers(pageToken: pageToken, cancellationToken: cancellationToken);
-				pageToken = result.NextPageToken;
-				users.AddRange(result.Users);
-			} while (!string.IsNullOrEmpty(pageToken));
+				var response = responses.Current;
+				users.AddRange(response.Users.Select(ConstructUser));
+			}
 
 			return users;
 		}

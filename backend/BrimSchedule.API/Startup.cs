@@ -197,7 +197,7 @@ namespace BrimSchedule.API
 			var firebaseConfigFilePath =
 				$"./brimschedule-firebase-admin-sdk{(isDevelopment ? "-test" : string.Empty)}.json";
 
-			FirebaseApp.Create(new AppOptions()
+			FirebaseApp.Create(new AppOptions
 			{
 				Credential = GoogleCredential.FromFile(firebaseConfigFilePath)
 			});
