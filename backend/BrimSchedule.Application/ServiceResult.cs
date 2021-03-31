@@ -2,8 +2,8 @@
 {
 	public class ServiceResult
 	{
-		public bool Success { get; private init; }
-		public string ErrorMessage { get; private init; }
+		public bool Success { get; init; }
+		public string ErrorMessage { get; init; }
 
 		private static ServiceResult StaticSuccessResult => new()
 		{
