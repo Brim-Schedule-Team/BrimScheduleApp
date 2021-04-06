@@ -14,6 +14,7 @@ namespace BrimSchedule.Infrastructure.Firebase
 	public class UserRepository : IUserRepository
 	{
 		private readonly ILoggingManager _logger;
+		private static FirebaseAuth FirebaseAuth => FirebaseAuth.DefaultInstance ?? throw new Exception("Firebase instance not configured");
 
 		public UserRepository(ILoggingManager logger)
 		{
@@ -29,7 +30,9 @@ namespace BrimSchedule.Infrastructure.Firebase
 					PageToken = pageToken
 				};
 
-			var page = await FirebaseAuth.DefaultInstance.ListUsersAsync(options).ReadPageAsync(pageSize, cancellationToken);
+			var page = await FirebaseAuth.ListUsersAsync(options).ReadPageAsync(pageSize, cancellationToken);
+
+			if (page == null) return new UserPageResult();
 
 			var users = page.Select(ConstructUser).ToArray();
 
@@ -44,12 +47,16 @@ namespace BrimSchedule.Infrastructure.Firebase
 		{
 			var users = new List<User>();
 
-			var pagedEnumerable = FirebaseAuth.DefaultInstance.ListUsersAsync(null);
+			var pagedEnumerable = FirebaseAuth.ListUsersAsync(null);
 			var responses = pagedEnumerable.AsRawResponses().GetAsyncEnumerator(cancellationToken);
 			while (await responses.MoveNextAsync())
 			{
 				var response = responses.Current;
-				users.AddRange(response.Users.Select(ConstructUser));
+				//firebase can return null collection if no one user exists
+				if (response.Users != null)
+				{
+					users.AddRange(response.Users.Select(ConstructUser));
+				}
 			}
 
 			return users;
@@ -60,7 +67,7 @@ namespace BrimSchedule.Infrastructure.Firebase
 			var identifiers = new List<UserIdentifier>();
 			identifiers.AddRange(ids.Select(id => new UidIdentifier(id)));
 
-			var result = await FirebaseAuth.DefaultInstance.GetUsersAsync(identifiers, cancellationToken);
+			var result = await FirebaseAuth.GetUsersAsync(identifiers, cancellationToken);
 
 			foreach (var notFoundIdentifiers in result.NotFound)
 			{
@@ -73,7 +80,7 @@ namespace BrimSchedule.Infrastructure.Firebase
 		public async Task<User> GetById(string id, CancellationToken cancellationToken = default)
 		{
 			return await InnerGet(
-				(i, token) => FirebaseAuth.DefaultInstance.GetUserAsync(i, token),
+				(i, token) => FirebaseAuth.GetUserAsync(i, token),
 				id,
 				cancellationToken
 			);
@@ -82,7 +89,7 @@ namespace BrimSchedule.Infrastructure.Firebase
 		public async Task<User> GetByPhoneNumber(string phoneNumber, CancellationToken cancellationToken = default)
 		{
 			return await InnerGet(
-				(phone, token) => FirebaseAuth.DefaultInstance.GetUserByPhoneNumberAsync(phone, token),
+				(phone, token) => FirebaseAuth.GetUserByPhoneNumberAsync(phone, token),
 				phoneNumber,
 				cancellationToken
 			);
@@ -94,13 +101,13 @@ namespace BrimSchedule.Infrastructure.Firebase
 			{
 				PhoneNumber = entity.PhoneNumber
 			};
-			var userRecord = await FirebaseAuth.DefaultInstance.CreateUserAsync(args, cancellationToken);
+			var userRecord = await FirebaseAuth.CreateUserAsync(args, cancellationToken);
 			return ConstructUser(userRecord);
 		}
 
 		public async Task SetClaims(string id, IReadOnlyDictionary<string, object> claims, CancellationToken cancellationToken = default)
 		{
-			await FirebaseAuth.DefaultInstance.SetCustomUserClaimsAsync(id, claims, cancellationToken);
+			await FirebaseAuth.SetCustomUserClaimsAsync(id, claims, cancellationToken);
 		}
 
 		public async Task SetRole(string id, string role, CancellationToken cancellationToken = default)
@@ -115,7 +122,7 @@ namespace BrimSchedule.Infrastructure.Firebase
 
 		public async Task Delete(string id, CancellationToken cancellationToken = default)
 		{
-			await FirebaseAuth.DefaultInstance.DeleteUserAsync(id, cancellationToken);
+			await FirebaseAuth.DeleteUserAsync(id, cancellationToken);
 		}
 
 		private async Task<User> InnerGet(Func<string, CancellationToken, Task<UserRecord>> getAction, string parameter, CancellationToken cancellationToken)
