@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using BrimSchedule.API.Config.SwaggerConfiguration;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.Services.Authentication;
+using BrimSchedule.API.Utility;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -35,7 +36,15 @@ namespace BrimSchedule.API
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.ConfigureDependencyInjection(CurrentEnvironment.IsDevelopment(), Configuration);
-			services.AddControllers();
+
+			var mvcBuilder = CurrentEnvironment.IsDevelopment()
+				? services.AddControllersWithViews()
+				: services.AddControllers();
+
+			mvcBuilder.ConfigureApplicationPartManager(
+				manager => manager.FeatureProviders.Add(new ExposeInEnvironmentControllerFeatureProvider(CurrentEnvironment))
+			);
+
 			services.AddHealthChecks();
 
 			services.AddCors(b =>
@@ -48,28 +57,26 @@ namespace BrimSchedule.API
 					builder.AllowAnyMethod();
 				});
 
-				b.AddDefaultPolicy(_ =>
-				{
-
-				});
+				b.AddDefaultPolicy(_ => { });
 			});
 
 			services.AddAuthentication(opt =>
-			{
-				opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-			})
-			.AddJwtBearer(opt => {
-				opt.Events = new JwtBearerEvents
 				{
-					OnMessageReceived = async context => await AuthTokenHandler.HandleTokenAsync(context),
-					OnAuthenticationFailed = context =>
+					opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+					opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+				})
+				.AddJwtBearer(opt =>
+				{
+					opt.Events = new JwtBearerEvents
 					{
-						context.Fail(context.Exception);
-						return Task.CompletedTask;
-					}
-				};
-			});
+						OnMessageReceived = async context => await AuthTokenHandler.HandleTokenAsync(context),
+						OnAuthenticationFailed = context =>
+						{
+							context.Fail(context.Exception);
+							return Task.CompletedTask;
+						}
+					};
+				});
 
 			services.AddAuthorization();
 
@@ -129,10 +136,7 @@ namespace BrimSchedule.API
 					});
 				});
 
-			services.AddControllersWithViews();
-			services.AddRazorPages();
 			services.AddHttpContextAccessor();
-
 			AddFirebaseAuth(CurrentEnvironment.IsDevelopment());
 		}
 

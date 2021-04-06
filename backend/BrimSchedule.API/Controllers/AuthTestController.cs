@@ -10,6 +10,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace BrimSchedule.API.Controllers
 {
 	[Authorize]
+	[DevOnly]
     public class AuthTestController : Controller
     {
         private readonly IHttpContextAccessor _context;
