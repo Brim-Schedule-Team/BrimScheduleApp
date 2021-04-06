@@ -14,7 +14,7 @@ namespace BrimSchedule.API.Utility
 		}
 	}
 
-	public class DevOnlyAttribute : ExposeInEnvironmentAttribute
+	public sealed class DevOnlyAttribute : ExposeInEnvironmentAttribute
 	{
 		public DevOnlyAttribute() : base(Environments.Development)
 		{
