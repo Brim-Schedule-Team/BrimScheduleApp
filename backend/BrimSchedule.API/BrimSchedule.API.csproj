@@ -14,9 +14,9 @@
       <PackageReference Include="FirebaseAdmin" Version="2.0.0" />
       <PackageReference Include="log4net" Version="2.0.12" />
       <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="5.0.2" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0-preview.2" />
-      <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0-preview.2" />
-      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.3">
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.0.0" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning.ApiExplorer" Version="5.0.0" />
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="5.0.2">
         <PrivateAssets>all</PrivateAssets>
         <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       </PackageReference>
