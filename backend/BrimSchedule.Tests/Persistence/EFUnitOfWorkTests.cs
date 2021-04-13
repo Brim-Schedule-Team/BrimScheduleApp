@@ -28,23 +28,6 @@ namespace BrimSchedule.Tests.Persistence
 			dbContext.Database.EnsureDeleted();
 		}
 
-		[Test]
-		public void Roles_ShouldReturnTwoRoles_ForUserAndAdmin()
-		{
-			using var dbContext = CreateDbContext(ConnectionString);
-			using var unitOfWork = new EFUnitOfWork(dbContext);
-
-			var expectedRoles = new[] { RoleNames.Admin, RoleNames.User };
-
-			var actualRoles = unitOfWork.Roles.Get().ToList();
-
-			actualRoles.Count.Should().Be(expectedRoles.Length);
-			foreach (var expectedRole in expectedRoles)
-			{
-				actualRoles.Should().Contain(r => r.Name == expectedRole);
-			}
-		}
-
 		private static BrimScheduleContext CreateDbContext(string connectionString)
 		{
 			var dbOptionsBuilder = new DbContextOptionsBuilder<BrimScheduleContext>();

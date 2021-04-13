@@ -3,13 +3,13 @@ using Microsoft.AspNetCore.Identity;
 
 namespace BrimSchedule.Domain.Models
 {
-	public class User: IdentityUser<int>
+	public class User
 	{
-		public string Login { get; set; }
-		public bool IsVerified { get; set; }
-		public bool IsDeleted { get; set; }
+		public string Id { get; set; }
+		public string PhoneNumber { get; set; }
+		public bool Disabled { get; set; }
+		public string Role { get; set; }
 
-		public virtual Profile Profile { get; set; }
-		public virtual ICollection<Attendance> Attendance { get; set; }
+		public Profile Profile { get; set; }
 	}
 }

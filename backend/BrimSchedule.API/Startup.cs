@@ -2,11 +2,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Threading.Tasks;
+using BrimSchedule.API.Config.SwaggerConfiguration;
 using BrimSchedule.API.Services;
 using BrimSchedule.API.Services.Authentication;
-using BrimSchedule.API.SwaggerConfiguration;
-using BrimSchedule.Domain.Models;
-using BrimSchedule.Persistence.EF;
+using BrimSchedule.API.Utility;
 using FirebaseAdmin;
 using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -37,7 +36,15 @@ namespace BrimSchedule.API
 		public void ConfigureServices(IServiceCollection services)
 		{
 			services.ConfigureDependencyInjection(CurrentEnvironment.IsDevelopment(), Configuration);
-			services.AddControllers();
+
+			var mvcBuilder = CurrentEnvironment.IsDevelopment()
+				? services.AddControllersWithViews()
+				: services.AddControllers();
+
+			mvcBuilder.ConfigureApplicationPartManager(
+				manager => manager.FeatureProviders.Add(new ExposeInEnvironmentControllerFeatureProvider(CurrentEnvironment))
+			);
+
 			services.AddHealthChecks();
 
 			services.AddCors(b =>
@@ -50,28 +57,28 @@ namespace BrimSchedule.API
 					builder.AllowAnyMethod();
 				});
 
-				b.AddDefaultPolicy(_ =>
-				{
-
-				});
+				b.AddDefaultPolicy(_ => { });
 			});
 
 			services.AddAuthentication(opt =>
-			{
-				opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-				opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-			})
-			.AddJwtBearer(opt => {
-				opt.Events = new JwtBearerEvents
 				{
-					OnMessageReceived = async context => await AuthTokenHandler.HandleTokenAsync(context),
-					OnAuthenticationFailed = context =>
+					opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+					opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+				})
+				.AddJwtBearer(opt =>
+				{
+					opt.Events = new JwtBearerEvents
 					{
-						context.Fail(context.Exception);
-						return Task.CompletedTask;
-					}
-				};
-			});
+						OnMessageReceived = async context => await AuthTokenHandler.HandleTokenAsync(context),
+						OnAuthenticationFailed = context =>
+						{
+							context.Fail(context.Exception);
+							return Task.CompletedTask;
+						}
+					};
+				});
+
+			services.AddAuthorization();
 
 			services.AddApiVersioning(options =>
 			{
@@ -104,9 +111,10 @@ namespace BrimSchedule.API
 					options.AddSecurityDefinition(AuthTokenHandler.Bearer, new OpenApiSecurityScheme
 					{
 						In = ParameterLocation.Header,
-						Description = $"Введите в поле JWT токен с припиской {AuthTokenHandler.Bearer}",
-						Name = "Authorization",
-						Type = SecuritySchemeType.ApiKey
+						Description = $"Введите в поле JWT токен с префиксом {AuthTokenHandler.Bearer}",
+						Name = AuthTokenHandler.HeaderName,
+						Type = SecuritySchemeType.ApiKey,
+						Scheme = AuthTokenHandler.Bearer
 					});
 
 					options.AddSecurityRequirement(new OpenApiSecurityRequirement
@@ -114,15 +122,22 @@ namespace BrimSchedule.API
 						{
 							new OpenApiSecurityScheme
 							{
-								Name = AuthTokenHandler.Bearer
+								Name = AuthTokenHandler.Bearer,
+								Reference = new OpenApiReference
+								{
+									Type = ReferenceType.SecurityScheme,
+									Id = AuthTokenHandler.Bearer
+								},
+								Scheme = "oauth2",
+								In = ParameterLocation.Header,
 							},
 							new List<string>()
 						}
 					});
 				});
 
-			services.AddIdentity<User, Role>()
-				.AddEntityFrameworkStores<BrimScheduleContext>();
+			services.AddHttpContextAccessor();
+			AddFirebaseAuth(CurrentEnvironment.IsDevelopment());
 		}
 
 		public void Configure(IApplicationBuilder app, IWebHostEnvironment env, IApiVersionDescriptionProvider provider)
@@ -148,17 +163,20 @@ namespace BrimSchedule.API
 				app.UseHsts();
 			}
 
-			UseFirebaseAuth(isDevelopment);
-
 			app.UseAuthentication();
-			app.UseAuthorization();
+            app.UseAuthorization();
 
-			app.UseEndpoints(endpoints =>
-			{
-				endpoints.MapControllers();
+            app.UseEndpoints(endpoints =>
+            {
+                endpoints.MapControllers();
 				endpoints.MapHealthChecks("/health");
-			});
-		}
+
+				if (isDevelopment)
+				{
+					endpoints.MapControllerRoute("default", "{controller=Home}/{action=Index}/{id?}");
+				}
+            });
+        }
 
 		private void UseSwagger(IApplicationBuilder app, IApiVersionDescriptionProvider provider)
 		{
@@ -178,12 +196,12 @@ namespace BrimSchedule.API
 				});
 		}
 
-		private static void UseFirebaseAuth(bool isDevelopment)
+		private static void AddFirebaseAuth(bool isDevelopment)
 		{
 			var firebaseConfigFilePath =
 				$"./brimschedule-firebase-admin-sdk{(isDevelopment ? "-test" : string.Empty)}.json";
 
-			FirebaseApp.Create(new AppOptions()
+			FirebaseApp.Create(new AppOptions
 			{
 				Credential = GoogleCredential.FromFile(firebaseConfigFilePath)
 			});

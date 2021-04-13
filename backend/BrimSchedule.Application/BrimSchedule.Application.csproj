@@ -7,6 +7,11 @@
 
     <ItemGroup>
       <PackageReference Include="log4net" Version="2.0.12" />
+      <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\BrimSchedule.Domain\BrimSchedule.Domain.csproj" />
     </ItemGroup>
 
 </Project>

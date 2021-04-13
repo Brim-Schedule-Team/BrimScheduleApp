@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using BrimSchedule.Application.Interfaces.Repositories;
 using BrimSchedule.Persistence.EF;
-using BrimSchedule.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace BrimSchedule.Persistence.Repositories

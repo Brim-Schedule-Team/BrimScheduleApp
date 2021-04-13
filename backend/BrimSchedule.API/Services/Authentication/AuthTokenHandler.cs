@@ -10,10 +10,11 @@ namespace BrimSchedule.API.Services.Authentication
 	public static class AuthTokenHandler
 	{
 		public const string Bearer = "Bearer";
+		public const string HeaderName = "Authorization";
 
 		public static async Task HandleTokenAsync(MessageReceivedContext context)
 		{
-			var authorization = context.Request.Headers["Authorization"].ToString();
+			var authorization = context.Request.Headers[HeaderName].ToString();
 
 			if (string.IsNullOrEmpty(authorization))
 			{
@@ -36,6 +37,7 @@ namespace BrimSchedule.API.Services.Authentication
 			context.Principal = new ClaimsPrincipal(
 				new ClaimsIdentity(
 					decodedToken.Claims.Select(c => new Claim(c.Key, c.Value.ToString()))
+						.Where(claim => claim.Type != ClaimsIdentity.DefaultNameClaimType)
 						.Append(new Claim(ClaimsIdentity.DefaultNameClaimType, decodedToken.Uid)),
 					JwtBearerDefaults.AuthenticationScheme
 				));

@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
 
-namespace BrimSchedule.API.SwaggerConfiguration
+namespace BrimSchedule.API.Config.SwaggerConfiguration
 {
 	public class SwaggerDefaultValues : IOperationFilter
 	{

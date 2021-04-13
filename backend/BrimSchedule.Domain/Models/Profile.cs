@@ -14,7 +14,6 @@ namespace BrimSchedule.Domain.Models
 		public string OtherContact { get; set; }
 		public string Notes { get; set; }
 
-		public int UserId { get; set; }
-		public virtual User User { get; set; }
+		public string UserId { get; set; }
 	}
 }
